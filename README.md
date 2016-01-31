@@ -14,4 +14,3 @@ default
     }
 }
 </pre>
-<span class="glyphicon glyphicon-heart"></span>
