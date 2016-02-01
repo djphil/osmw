@@ -1,16 +1,2 @@
-# Hello-World
-hello-world, this is only a test ...
-<pre>
-default
-{
-    state_entry()
-    {
-        llSay(0, "Hello, Avatar!");
-    }
- 
-    touch_start(integer total_number)
-    {
-        llSay(0, "Touched.");
-    }
-}
-</pre>
+# osmw v5.0
+OpenSim Manager Web v5.0 (Deluxe Edition)
