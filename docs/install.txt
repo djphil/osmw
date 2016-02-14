@@ -1,0 +1,15 @@
+Install OSMW v5.0
+=================
+- http://domain.com/osmw/install.php
+
+More config
+===========
+- inc/config.php
+
+Admin Login
+===========
+firstname = super
+lastname  = admin
+password  = password
+
+Enjoy!
