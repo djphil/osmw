@@ -19,6 +19,20 @@ Gestion des Utilisateurs:
 ******************************************
 ********* Suivi de versions **********
 ******************************************
+
+*** v5.0 *** MISE A JOUR MAJEUR ***
+/* NEWS 2015 by djphil */
+-- Cleanup Code
+-- Fix bugs
+-- Add Themes
+-- Add bootstrap
+-- Add Multilanguage
+-- Add Google Recaptcha v2.0
+-- Add Navbar, Hg, Map, Contact, ...
+-- Add more actions, options, infos, ...
+And more, and more, and more ...
+-- ...
+-------------------------------------------------------
 *** V 4 Beta *** En cours
 -- Mise à jours des SESSION
 -- Systeme d'installation intégrés **
