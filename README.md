@@ -1,4 +1,5 @@
 # osmw v6.0
 OpenSim Manager Web v6.0 by djphil (CC-BY-NC-SA 4.0)
 
-Tested only on Windows 10 and PHP 7.x
+## Help
+See the <a href="https://github.com/djphil/osmw/wiki">Wiki</a> form more informations
