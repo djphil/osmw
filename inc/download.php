@@ -1,16 +1,15 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {session_start();}
-
+// if (session_status() == PHP_SESSION_NONE) {session_start();}
 $filename = $_GET['file'];
-
-if(ini_get('zlib.output_compression'))
-    ini_set('zlib.output_compression', 'Off');
-
+// $filename = "E:/opensim/bin/inventory.iar";
+// Required for IE, otherwise Content-disposition is ignored
+if(ini_get('zlib.output_compression')) ini_set('zlib.output_compression', 'Off');
 $file_extension = strtolower(substr(strrchr($filename,"."), 1));
 
 if ($filename == "") 
 {
     echo "<html><title> Download Script</title><body>";
+    // ???
     echo "ERROR: download file NOT SPECIFIED. USE inc/download.php?file=filepath";
     echo "</body></html>";
     // $_SESSION[flash][danger] = "ERROR: download file NOT SPECIFIED. USE inc/download.php?file=filepath";
@@ -45,15 +44,15 @@ switch($file_extension)
     default: $ctype = "application/force-download";
 }
 
-    header("Pragma: public");
-    header("Expires: 0");
-    header("Cache-Control: must-revalidate, post-check = 0, pre-check = 0");
-    header("Cache-Control: private", false);
-    header("Content-Type: $ctype");
-    header("Content-Disposition: attachment; filename=\"".basename($filename)."\";" );
-    header("Content-Transfer-Encoding: binary");
-    header("Content-Length: ".filesize($filename));
-    readfile("$filename");
-    // return true;
-    exit();
+header("Pragma: public");
+header("Expires: 0");
+header("Cache-Control: must-revalidate, post-check = 0, pre-check = 0");
+header("Cache-Control: private", false);
+header("Content-Type: $ctype");
+header("Content-Disposition: attachment; filename=\"".basename($filename)."\";" );
+header("Content-Transfer-Encoding: binary");
+header("Content-Length: ".filesize($filename));
+readfile("$filename");
+// return true;
+exit();
 ?>

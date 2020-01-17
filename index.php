@@ -1,120 +1,103 @@
 <?php
-require_once ('inc/config.php');
-require_once ('inc/fonctions.php');
-require_once ('inc/radmin.php');
-if ($themes) {require_once ('./inc/themes.php');}
+session_start();
+header('Content-Type: text/html; charset=utf-8');
+ini_set('magic_quotes_gpc', 0);
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 
-if ($_GET['a'] == 'logout')
+include_once('inc/config.php');
+include_once('inc/mysqli.php');
+include_once('inc/fonctions.php');
+include_once('inc/radmin.php');
+if ($themes) {include_once ('inc/themes.php');}
+
+$a = !empty($_GET['a']) ? $_GET['a'] : 1;
+if ($a == 'logout')
 {
     $_SESSION = array();
     session_destroy();
     session_unset();
     header('Location: index.php');
 }
-session_start();
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OpenSimulator Manager Web</title>
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Philippe Lemaire (djphil)">
     <link rel="icon" href="img/favicon.ico">
-    <title>Open Simulator Web Manager</title>
-    <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" media="all" type="text/css" id="css" href="<?php echo $url; ?>" />
-    <link rel="stylesheet" href="css/btn3d.css" type="text/css" />
-    <link rel="stylesheet" href="css/login.css" type="text/css" />
-    <link rel="stylesheet" href="css/custom.css" type="text/css" />
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <script>
-        $('#myTab a').click(function (e) {e.preventDefault(); $(this).tab('show');})
-        $('#myTab a[href="#profile"]').tab('show')
-        $('#myTab a:first').tab('show')
-        $('#myTab a:last').tab('show')
-        $('#myTab li:eq(2) a').tab('show')
-    </script>
+    <link rel="author" href="inc/humans.txt" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" media="all" id="css" href="<?php echo $url; ?>" />
+    <?php if (strpos($url, 'default.css')): ?>
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <?php endif; ?>
+    <link rel="stylesheet" href="css/gh-fork-ribbon.min.css">
+    <link rel="stylesheet" href="css/btn3d.css">
+    <link rel="stylesheet" href="css/osmw.css">
 </head>
 <body>
 
 <div class="container">
+<div class="github-fork-ribbon-wrapper left">
+    <div class="github-fork-ribbon">
+        <a href="<?php echo $github_url; ?>" target="_blank"><?php echo $github_txt; ?></a>
+    </div>
+</div>
 
 <?php
-// *********
-// RECAPTCHA
-// *********
-if ($recaptcha && $_POST["g-recaptcha"])
+if ($recaptcha && !empty($_POST["g-recaptcha"]))
 {
     include 'inc/recaptcha.php';
+    $response = null;
+    $error = null;
+    $reCaptcha = new ReCaptcha($secret);
 
-	// The response from reCAPTCHA
-	$resp = null;
-	
-	// The error code from reCAPTCHA, if any
-	$error = null;
-	$reCaptcha = new ReCaptcha($secret);
-	
-	// Was there a reCAPTCHA response?
-	if ($_POST["g-recaptcha-response"])
-	{
-	    $resp = $reCaptcha->verifyResponse(
+    if ($_POST["g-recaptcha-response"])
+    {
+        $response = $reCaptcha->verifyResponse(
             $_SERVER["REMOTE_ADDR"],
             $_POST["g-recaptcha-response"]
-		);
-	}
-	
-	// If success
-	if ($resp != null && $resp->success)
+        );
+    }
+
+    if ($response != null && $response->success)
 	{
         // echo '<div id="alert" class="alert alert-success alert-dismissible" role="alert">Recaptcha success ...</div>';
-	}
+    }
 
-	else
-	{
-	    echo '<div id="alert" class="alert alert-danger alert-dismissible" role="alert">Recaptcha failed!</div>';
-		$_SESSION = array();
-		session_unset();
-	}
+    else
+    {
+        echo '<div id="alert" class="alert alert-danger alert-dismissible" role="alert">Recaptcha failed!</div>';
+        $_SESSION = array();
+        session_unset();
+    }
 }
 
-// *********************************************************
-// IDENTIFICATION ET INITIALISATION Variable OPENSIM[SELECT]
-// *********************************************************
 if (isset($_POST['firstname']) && isset($_POST['lastname']) && isset($_POST['pass']))
 {
-	$_SESSION['login'] = $_POST['firstname'].' '. $_POST['lastname'];
+    $_SESSION['login'] = $_POST['firstname'].' '. $_POST['lastname'];
     $auth = false;
-	$passwordHash = sha1($_POST['pass']);
+    $passwordHash = sha1($_POST['pass']);
 
-	// on se connecte a MySQL
-	$db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-	mysql_select_db($database,$db);
+    $sql = 'SELECT * FROM users';
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
 
-	$sql = 'SELECT * FROM users';
-	$req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
-
-	while($data = mysql_fetch_assoc($req))
-	{
-		if ($data['firstname'] == $_POST['firstname'] 
-        and $data['lastname'] == $_POST['lastname'] 
-        and $data['password'] == $passwordHash)
-		{
-			$auth = true;
-			$_SESSION['privilege'] = $data['privilege'];
-			$_SESSION['osAutorise'] = $data['osAutorise'];
-			$_SESSION['authentification']=true;
-			break;
-		}
-	}
+    while($data = mysqli_fetch_assoc($req))
+    {
+        if ($data['firstname'] == $_POST['firstname'] and $data['lastname'] == $_POST['lastname'] and $data['password'] == $passwordHash)
+        {
+            $auth = true;
+            $_SESSION['privilege'] = $data['privilege'];
+            $_SESSION['osAutorise'] = $data['osAutorise'];
+            $_SESSION['authentification'] = true;
+            break;
+        }
+    }
 
     if ($auth == false)
     {
@@ -124,38 +107,37 @@ if (isset($_POST['firstname']) && isset($_POST['lastname']) && isset($_POST['pas
 
     else
     {
-        // echo '<p>Bienvenue sur la page administration du site.</p>';
-		// on se connecte a MySQL
-		$db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-		mysql_select_db($database,$db);
-		$sql = 'SELECT * FROM moteurs';
-		$req = mysql_query($sql) or die('Erreur SQL!<p>'.$sql.'</p>'.mysql_error());
-		while($data = mysql_fetch_assoc($req))
+        $db = mysqli_connect($hostnameBDD, $userBDD, $passBDD, $database);
+        if (mysqli_connect_errno()) {echo "Failed to connect to MySQL: " . mysqli_connect_error();}
+
+        $sql = 'SELECT * FROM moteurs';
+        $req = mysqli_query($db, $sql) or die('Erreur SQL!<p>'.$sql.'</p>'.mysqli_error($db));
+
+        while($data = mysqli_fetch_assoc($req))
         {
             $_SESSION['opensim_select'] = $data['id_os'];
             break;
         }
     }
-	mysql_close();
+    // mysqli_close($db);
 }
 
-// Affichage variable post
-// foreach($_POST as $key => $val) echo '$_POST["'.$key.'"]='.$val.'<br />';
 if (isset($_SESSION['privilege']))
 {
-	$btnN1 = "disabled"; 
+    $btnN1 = "disabled"; 
     $btnN2 = "disabled"; 
     $btnN3 = "disabled";
-	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4 Super Administrateur
-	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3 Administrateur
-	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2 Gestionnaire (sauvegarde)
-	if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1 Utilisateurs
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4 Super Administrateur
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3 Administrateur
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2 Gestionnaire (sauvegarde)
+    if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1 Utilisateurs
 }
 ?>
 
-<?php if ($themes && isset($_SESSION['authentification'])): ?>
 <!--Themes -->
-<?php if ($_GET['style']) {$theme = $_GET['style'];} else $theme = "Themes"; ?>
+<div class="options">
+<?php if ($themes && isset($_SESSION['authentification'])): ?>
+<?php if (isset($_GET['style']) && !empty($_GET['style'])) {$theme = $_GET['style'];} else $theme = "Themes"; ?>
 <div class="btn-group">
     <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <i class="glyphicon glyphicon-leaf"></i> <?php echo $theme; ?>
@@ -188,124 +170,89 @@ if (isset($_SESSION['privilege']))
 <?php
 if ($translator && isset($_SESSION['authentification']))
 {
-    require_once ('./inc/translator.php');
-	echo('<div class="pull-right">');
-	include_once("./inc/flags.php");
-	echo('</div>');
+    require_once ('inc/translator.php');
+    echo('<div class="pull-right">');
+    include_once("inc/flags.php");
+    echo('</div>');
 }
 ?>
+</div>
 
 <div class="clearfix"></div>
 
 <?php
-// **********************
-// PAGE EN ACCES SECURISE
-// **********************
-// Verification sur la session authentification 
 if (isset($_SESSION['authentification']))
 {
-	// Si le moteur selectionne a change
 	if (isset($_POST['OSSelect']))
     {
         $_SESSION['opensim_select'] = trim($_POST['OSSelect']);
     }
 
-	// DISPLAY BOOTSTRAP MENU
-    // echo '<p>Bienvenue <strong>'.$_SESSION['login'].'</strong>';
-	include_once './inc/navbar.php';
-?>
-
-<?php
-    if ($_GET['a'])
+	include_once 'inc/navbar.php';
+    
+    if (isset($_GET['a']) && !empty($_GET['a']))
     {
         $a = $_GET['a'];
-        /* index.php v6.0 */
-        if ($a == "1") {include('inc/GestSims.php');}           // # Gestion sim v6.0
-        if ($a == "2") {include('inc/GestSaveRestore.php');}    // # Gestion backup sim v6.0
-        if ($a == "3") {include('inc/GestTerrain.php');}        // # Gestion Terrain v6.0
-        if ($a == "4") {include('inc/GestInventaire.php');}     // # Exporter un inventaire v6.0
-        if ($a == "5") {include('inc/GestOpensim.php');}        // admin // # Edition des fichiers de conf Opensim propre au moteur V5
-        if ($a == "6") {include('inc/GestRegion.php');}         // admin // # Gestion des Regions par moteur
-        if ($a == "7") {include('inc/GestLog.php');}            // # Gestion du Log v6.0
-        // if ($a == "8") {include('inc/GestAdminServ.php');}   // admin // # Gestion du serveur
-        if ($a == "9") {include('inc/contact.php');}            // # Helpdesk Utilisateur v4.0
-        if ($a == "10") {include('inc/GestDirectory.php');}     // # Gestion des Fichiers v6.0
-        // if ($a == "11") {include('inc/GestLoad.php');}       // # Chargement de OAR v6.0
-        // if ($a == "12") {include('inc/GestIdentite.php');}   // admin // # Connection a Admin Grille OSMW V4
-        if ($a == "13") {include('inc/help.php');}              // # Aide V4
-        if ($a == "14") {include('inc/about.php');}             // # Les remerciements v6.0
-        if ($a == "15") {include('inc/GestUsers.php');}         // admin // # Gestion des utilisateurs v6.0
-        // if ($a == "16") {include('inc/GestBackup.php');}     // admin // # Gestion des sauvegardes v6.0
-        if ($a == "17") {include('inc/GestMoteur.php');}        // admin // # Gestion des moteurs v6.0
-        if ($a == "18") {include('inc/GestConfig.php');}        // admin // # Configuration de OSMW v6.0
-        // if ($a == "19") {include('inc/GestRemoteAdmin.php');}// admin //	# Commande remote admin personalise --- a faire
-        // if ($a == "20") {include('inc/GestTransfert.php');}  // admin // # Permet le transfert de fichier 
-        if ($a == "21") {include('inc/GestHypergrid.php');}     // # Gestion des liens Hypergrid
-        if ($a == "22") {include('inc/map.php');}               // # Map
-
-        if ($a == "logout")
-        {
-            session_start();
-            $_SESSION = array();
-            session_unset();
-            header('Location: index.php');
-        }
-	}
+        if ($a == "1") {include('inc/GestSims.php');}               // # Gestion sim v6.0
+        if ($a == "2") {include('inc/GestSaveRestore.php');}        // # Gestion backup sim v6.0
+        if ($a == "3") {include('inc/GestTerrain.php');}            // # Gestion Terrain v6.0
+        if ($a == "4") {include('inc/GestInventaire.php');}         // # Exporter un inventaire v6.0
+        if ($a == "5") {include('inc/GestOpensim.php');}            // admin // # Edition des fichiers de conf Opensim propre au moteur V5
+        if ($a == "6") {include('inc/GestRegion.php');}             // admin // # Gestion des Regions par moteur
+        if ($a == "7") {include('inc/GestLog.php');}                // # Gestion du Log v6.0
+        // if ($a == "8") {include('inc/GestAdminServ.php');}       // admin // # Gestion du serveur (Linux Only)
+        if ($a == "9") {include('inc/GestContact.php');}            // # Helpdesk Utilisateur V4
+        if ($a == "10") {include('inc/GestDirectory.php');}         // # Gestion des Fichiers v6.0
+        // if ($a == "11") {include('inc/GestLoad.php');}           // # Chargement de OAR v6.0
+        // if ($a == "12") {include('inc/GestIdentite.php');}       // admin // # Connection a Admin Grille OSMW V4
+        // if ($a == "13") {include('inc/GEstHelp.php');}           // # Aide V4 (Obsolet)
+        if ($a == "14") {include('inc/GestAbout.php');}             // # Les remerciements v6.0
+        if ($a == "15") {include('inc/GestUsers.php');}             // admin // # Gestion des utilisateurs v6.0
+        if ($a == "16") {include('inc/GestBackup.php');}            // admin // # Gestion des sauvegardes v6.0
+        if ($a == "17") {include('inc/GestMoteur.php');}            // admin // # Gestion des moteurs v6.0
+        if ($a == "18") {include('inc/GestConfig.php');}            // admin // # Configuration de OSMW v6.0
+        // if ($a == "19") {include('inc/GestRemoteAdmin.php');}    // admin //	# Commande remote admin personalise (TODO)
+        // if ($a == "20") {include('inc/GestTransfert.php');}      // admin // # Permet le transfert de fichier 
+        if ($a == "21") {include('inc/GestHypergrid.php');}         // # Gestion des liens Hypergrid
+        if ($a == "22") {include('inc/GestMap.php');}               // # Basic Worldmap
+        if ($a == "23") {include('inc/GestNPC.php');}               // # Gestion des NPC's 'Alpha)
+    }
 
     else
 	{
-        // *******************
-        // AFFICHAGE PRINCIPAL
-        // *******************
-        echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
+        echo '<p class="pull-right"><span class="label label-danger">Espace Sécurisé Niveau '.$_SESSION['privilege'].'</span></p>';
         echo '<h1>Home</h1>';
         echo '<div class="clearfix"></div>';
 
-        // *** Formulaire de choix du moteur a selectionne ***
-        // *** Si NIV 1 - Verification Moteur Autorise *******
-        if($_SESSION['osAutorise'] != '')
+        if ($_SESSION['osAutorise'] != '')
         {
             $osAutorise = explode(";", $_SESSION['osAutorise']);
-            //echo count($osAutorise);
-            //echo $_SESSION['osAutorise'];
             for($i = 0; $i < count($osAutorise); $i++)
             {
                 if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i]) {$moteursOK = "OK";}
             }
         }
-        
-        // ****************************
-        // PARCOURS DE TOUS LES MOTEURS
-        // ****************************
-        // Formulaire de choix du moteur a selectionne
-        // on se connecte a MySQL
-        $db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-        mysql_select_db($database,$db);
-        
+
         $sql = 'SELECT * FROM moteurs';
-        $req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
+        $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
         echo '<a class="btn btn-primary pull-right" href="secondlife://'.$_SESSION['opensim_select'].'/128/128/25"><i class="glyphicon glyphicon-plane"></i> Teleport</a>';
 
         echo '<p>Simulateur selectionne';
         echo ' <strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
         echo '</p>';
 
-        // echo '<h4>Selectionner un Simulateur</h4>';
         echo '<form class="form-group" method="post" action="">';
         echo '<div class="form-inline">';
         echo '<label for="OSSelect"></label>Select Simulator ';
         echo '<select class="form-control" name="OSSelect">';
+        echo '<option selected disabled>Select a simulator ...</option>';
 
-        while($data = mysql_fetch_assoc($req))
+        while($data = mysqli_fetch_assoc($req))
         {
             // if ($data['osAutorise'] != '') {echo $data['osAutorise'];}
             // else {$osAutorise = explode(";", $data['osAutorise']); echo count($osAutorise);}
             $sel = "";
-            
-            if ($data['id_os'] == $_SESSION['opensim_select'])
-            {
-                $sel = "selected";
-            }
+            if ($data['id_os'] == $_SESSION['opensim_select']) {$sel = "selected";}
             echo '<option value="'.$data['id_os'].'" '.$sel.'>'.$data['name'].' '.$data['version'].'</option>';
         }
         
@@ -313,7 +260,6 @@ if (isset($_SESSION['authentification']))
         echo ' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
         echo '</div>';
         echo '</form>';
-        mysql_close();
         ?>
 
 		<?php if(isset($_SESSION['flash'])): ?>
@@ -325,114 +271,64 @@ if (isset($_SESSION['authentification']))
 			<?php unset($_SESSION['flash']); ?>
 		<?php endif; ?>
 
-        <?php
-		// **********
-		// TABS USERS
-		// **********
-		echo '<ul id="myTab" class="nav nav-tabs">';
-		echo '<li class="active"><a href="#user" data-toggle="tab">Section Utilisateur</a></li>';
-		echo '<li ><a href="#admin" data-toggle="tab">Section Administrateur</a></li></ul>';
-        
-        echo '<br />';
-        
-		echo '<div class="panel panel-default">
-		          <div class="panel-heading">
-    				  <h3 class="panel-title">Choisir une option ci-dessous:</h3>
-				  </div>
-				  <div class="panel-body">
-				      <div class="tab-content">';
-		echo '<div class="tab-pane fade in active" id="user">';
+        <div class="list-group">
+            <a class="list-group-item" href="?a=1">Gestion des Régions</a>
+            <a class="list-group-item" href="?a=10">Gestion des Sauvegardes</a>
+            <a class="list-group-item" href="?a=7">Gestion des Logs</a>
+            <a class="list-group-item" href="?a=2">Sauvegarder une Région</a>
+            <a class="list-group-item" href="?a=3">Sauvegarder un Terrain</a>
+            <a class="list-group-item" href="?a=4">Sauvegarder un Inventaire</a>
+            <a class="list-group-item" href="?a=21">Raccourcis Hypergrid</a>
+            <a class="list-group-item" href="?a=22">Afficher la Map</a>
+        </div>
 
-		echo '<p><a class="btn btn-default btn-block" href="?a=1">Gestion des Regions</a></p>';
-		echo '<p><a class="btn btn-default btn-block" href="?a=10">Gestion des Sauvegardes</a></p>';
-		echo '<p><a class="btn btn-default btn-block" href="?a=7">Gestion des Logs</a></p>';
-		echo '<p><a class="btn btn-default btn-block" href="?a=2">Sauvegarder une Region</a></p>';
-		echo '<p><a class="btn btn-default btn-block" href="?a=3">Sauvegarder un Terrain</a></p>';
-        echo '<p><a class="btn btn-default btn-block" href="?a=4">Sauvegarder un Inventaire</a></p>';
-        echo '<p><a class="btn btn-default btn-block" href="?a=21">Raccourcis Hypergrid</a></p>';
-        echo '<p><a class="btn btn-default btn-block" href="?a=22">Afficher la Map</a></p>';
-        // echo '<p><a class="btn btn-default btn-block" href="?a=9">Contacter un Administrateur</a></p>';
-		// echo '<p><a class="btn btn-default btn-block" href="?a=11">Charger une Sauvegarde.</a></p>';
-		
-		echo '</div>';
-        
-        // ***********
-		// TABS ADMINS
-        // ***********
-		if ($_SESSION['privilege'] >= 3)
-		{
-            echo '<div class="tab-pane fade in" id="admin">';
-		    echo '<p><a class="btn btn-default btn-block" href="?a=18">Configuration du Manager</a></p>';
-		    // echo '<p><a class="btn btn-default btn-block" href="?a=8">Gestion du Serveur</a></p>';
-		    echo '<p><a class="btn btn-default btn-block" href="?a=17">Gestion des Simulateurs</a></p>';
-		    echo '<p><a class="btn btn-default btn-block" href="?a=6">Gestion des Regions</a></p>';
-		    echo '<p><a class="btn btn-default btn-block" href="?a=5">Gestion des Fichiers</a></p>';
-		    echo '<p><a class="btn btn-default btn-block" href="?a=15">Gestion des Utilisateurs</a>';
-            // echo '<p><a class="btn btn-default btn-block" href="?a=12">Connectivite du Serveur OSMW</a></p>';
-            // echo '<p><a class="btn btn-default btn-block" href="?a=16">Sauvegardes config Opensim ( * en cours de dev )</a></p>';
-		    // echo '<p><a class="btn btn-default btn-block" href="?a=20">Transfert des Sauvegardes</a></p>';
-		    // echo '<p><a class="btn btn-default btn-block" href="?a=19">Gestion XMLRPC</a></p>';
-			echo '</div>';
-		}
-		
-		// echo '<a class="btn btn-default btn-block" href="?a=logout">D&eacute;connexion.</a>';
-		echo '</div>';
-		echo '</div>';
-		echo '</div>';
-		// echo '<p><a class="btn btn-default btn-block" href="?a=14">About OpenSim Web Manager</a></p>';
+        <?php 
+        mysqli_close($db);
     }
 }
 
-else
-{
-    session_start();
-    $_SESSION = array();
-    session_destroy();
-    session_unset();
-?>
+else { ?>
 
 <div class="text-center">
-    <h1 class="title">COLLAB <span>3D</span></h1>
+    <h1 class="title">OSMW <span><?php echo INI_Conf('VersionOSMW', 'VersionOSMW'); ?></span></h1>
 </div>
 
 <form class="form-signin" action="index.php" method="post" name="connect">
-
     <?php if (isset($_GET['erreur']) && ($_GET['erreur'] == "login")): ?>
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            Echec d'authentification: <strong>login ou mot de passe incorrect ...</strong>
-        </div>
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Echec d'authentification: <strong>login ou mot de passe incorrect ...</strong>
+    </div>
     <?php endif; ?>
 
     <?php if (isset($_GET['erreur']) && ($_GET['erreur'] == "delog")): ?>
-        <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            Deconnexion reussie, a bientot ...
-        </div>
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Déconnexion réussie, à bientôt ...
+    </div>
     <?php endif; ?>
 
     <?php if (isset($_GET['erreur']) && ($_GET['erreur'] == "intru")): ?>
-        <!-- Affiche l'erreur -->
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            Echec d'authentification: Aucune session ouverte ou droits insuffisants pour afficher cette page ...</strong>
-        </div>
-        <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-            Deconnexion reussie, a bientot ...</strong>
-        </div>
+    <!-- Affiche l'erreur -->
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Echec d'authentification: Aucune session ouverte ou droits insuffisants pour afficher cette page ...</strong>
+    </div>
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        Déconnexion réussie, à bientôt ...</strong>
+    </div>
     <?php endif; ?>
 
     <img style="height:128px;" class="img-thumbnail img-circle center-block" alt="Logo Server" src="img/logo.png">
-    <!--<h2 class="form-signin-heading text-center"></h2>-->
     <br />
     <label for="firstname" class="sr-only">Firstname</label>
         <input type="text" id="firstname" name="firstname" class="form-control" placeholder="First Name" required autofocus>
@@ -442,16 +338,16 @@ else
         <input type="password" id="pass" name="pass" class="form-control" placeholder="Password" required>
 
     <?php
-        if ($recaptcha)
-        {
-            echo '<div class="g-recaptcha" data-sitekey="'.$siteKey.'"></div>';
-            echo '<script type="text/javascript" src="https://www.google.com/recaptcha/api.js?hl='.$lang.'"></script>';
-        }
+    if ($recaptcha)
+    {
+        echo '<div class="g-recaptcha" data-sitekey="'.$siteKey.'"></div>';
+        echo '<script type="text/javascript" src="https://www.google.com/recaptcha/api.js?hl='.$lang.'"></script>';
+    }
     ?>
 
-	<div class="checkbox">
-		<label><input type="checkbox" name="remember" value="1" id="Remember"> Remember me</label>
-	</div>
+    <div class="checkbox">
+        <label><input type="checkbox" name="remember" value="1" id="Remember"> Remember me</label>
+    </div>
 
     <button class="btn btn-lg btn-default btn-block" type="submit">
         <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Authentification
@@ -462,37 +358,37 @@ else
 <div class="clearfix"></div>
 
 <footer class="footer">
-    <p class="text-center">Open Simulator Web Manager <?php echo date(Y); ?> <?php echo INI_Conf(VersionOSMW, VersionOSMW); ?> by djphil</p>
+    <p class="text-center">
+        OpenSimulator Manager Web <?php echo date('Y'); ?> v<?php echo INI_Conf('VersionOSMW', 'VersionOSMW'); ?> by djphil (CC-BY-NC-SA 4.0)
+    </p>
 </footer>
 
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/pdf.js"></script>
 
 <!-- FADE ALERT -->
-<script>
-    window.setTimeout(function() {$(".alert-anim").fadeTo(500, 0).slideUp(500, function() {$(this).remove();});}, 3000);
-</script>
-<script>$(function () {$('[data-toggle="tooltip"]').tooltip();});</script>
+<script>window.setTimeout(function() {$(".alert-anim").fadeTo(500, 0).slideUp(500, function() {$(this).remove();});}, 3000);</script>
 <script>$(document).ready(function(){$('[data-toggle="popover"]').popover();});</script>
 <script>$(document).ready(function(){$('.fade-in').hide().fadeIn();});</script>
+<script>$(function () {$('[data-toggle="tooltip"]').tooltip();});</script>
 <!--<script>.modal.in .modal-dialog {transform: none;}</script>-->
 
 <!-- PDF MODAL -->
 <script>
 $(function(){    
-    $('.view-pdf').on('click',function(){
+    $('.view-pdf').on('click',function() {
         var pdf_link = $(this).attr('href');
         var iframe = '<div class="iframe-container"><iframe src="'+pdf_link+'"></iframe></div>'
         $.createModal({
-        title:'Aide',
-        message: iframe,
-        closeButton:true,
-        scrollable:false
+            title:'Aide',
+            message: iframe,
+            closeButton:true,
+            scrollable:false
         });
-        return false;        
+        return false;
     });    
 })
 </script>

@@ -1,5 +1,4 @@
 <?php 
-// Verification sur la session authentification 
 if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 {
     echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
@@ -9,7 +8,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<p>Simulateur selectionne ';
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
-    /* ************************************ */
+
 	$btnN1 = "disabled";
     $btnN2 = "disabled";
     $btnN3 = "disabled";
@@ -17,15 +16,10 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
 	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
 	if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1
-    /* ************************************ */
+    // if ($moteursOK == true) {if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
-	// Formulaire de choix du moteur a selectionne
-    // On se connecte a MySQL
-    $db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-    mysql_select_db($database,$db);
-    
     $sql = 'SELECT * FROM moteurs';
-    $req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
 	
     // echo '<h4>Selectionner un Simulateur</h4>';
     echo '<form class="form-group" method="post" action="">';
@@ -33,14 +27,13 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<label for="OSSelect"></label>Select Simulator ';
     echo '<select class="form-control" name="OSSelect">';
 
-    while($data = mysql_fetch_assoc($req))
+    while($data = mysqli_fetch_assoc($req))
     {
         if ($data['osAutorise'] != '') {echo $data['osAutorise'];}
         else {$osAutorise = explode(";", $data['osAutorise']);
         echo count($osAutorise);}
 
         $sel = "";
-
         if ($data['id_os'] == $_SESSION['opensim_select']) {$sel = "selected";}
         echo '<option value="'.$data['id_os'].'" '.$sel.'>'.$data['name'].' '.$data['version'].'</option>';
     }
@@ -49,9 +42,9 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
     echo '</div>';
     echo'</form>';
-    mysql_close();
+    mysqli_close($db);
 
-    $RegionMax = INI_Conf(NbAutorized, NbAutorized);
+    $RegionMax = INI_Conf('NbAutorized', 'NbAutorized');
     echo '<p>Nombre Maximum de Regions Aurorisees <span class="badge">'.$RegionMax.'</span></p>';
 
  	echo '<form class="form-group" method="post" action="">';
@@ -59,16 +52,8 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 	echo '<button class="btn btn-success" type="submit" '.$btnN3.'><i class="glyphicon glyphicon-ok"></i> Ajouter une Region</button>';
 	echo '</form>';
 
-	//******************************************************
-	// CONSTRUCTION de la commande pour ENVOI sur la console via  SSH
-	//******************************************************
     if (isset($_POST['cmd']))
     {
-        // *** Affichage mode debug ***
-        // echo $_POST['cmd'];echo '<BR>';
-
-        // On charge le fichier INI
-        // *** Lecture Fichier Regions.ini *** 
         $filename = INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/Regions.ini";
 
         if (file_exists($filename)) {;}
@@ -103,17 +88,14 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 
         if ($_POST['cmd'] == 'Enregistrer')
         {
-            // AJOUTER chaque valeur
             $tableauIni[$_POST['NewName']]['RegionUUID']        = $_POST['RegionUUID'];
             $tableauIni[$_POST['NewName']]['Location']          = $_POST['Location'];
             $tableauIni[$_POST['NewName']]['InternalAddress']   = "0.0.0.0";
             $tableauIni[$_POST['NewName']]['InternalPort']      = $_POST['InternalPort'];
             $tableauIni[$_POST['NewName']]['ExternalHostName']  = $_POST['ExternalHostName'];
 
-            // Enregistrement du nouveau fichier 
             $fp = fopen (INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/RegionTemp.ini", "w");  
-            
-            while (list($key, $val) = each($tableauIni))
+            foreach($tableauIni as $key => $val)
             {
                 fputs($fp, "[".$key."]\r\n");
                 fputs($fp, "RegionUUID          = ".$tableauIni[$key]['RegionUUID']."\r\n");
@@ -137,8 +119,6 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
         {
             if ($_POST['name_sim'] == $_POST['NewName'])
             {
-                //echo $_POST['NewName'].' == '.$_POST['name_sim'].'<br>';
-                // AJOUTER chaque valeur
                 $tableauIni[$_POST['NewName']]['RegionUUID']        = $_POST['RegionUUID'];
                 $tableauIni[$_POST['NewName']]['Location']          = $_POST['Location'];
                 $tableauIni[$_POST['NewName']]['InternalAddress']   = "0.0.0.0";
@@ -148,15 +128,12 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 
             if ($_POST['name_sim'] <> $_POST['NewName'])
             {
-                // echo $_POST['NewName'].' <> '.$_POST['name_sim'];
-                // MODIFIER chaque valeur pour la region sellectionner ==> AJOUT Nouveau
                 $tableauIni[$_POST['NewName']]['RegionUUID']        = $_POST['RegionUUID'];
                 $tableauIni[$_POST['NewName']]['Location']          = $_POST['Location'];
                 $tableauIni[$_POST['NewName']]['InternalAddress']   = "0.0.0.0";
                 $tableauIni[$_POST['NewName']]['InternalPort']      = $_POST['InternalPort'];
                 $tableauIni[$_POST['NewName']]['ExternalHostName']  = $_POST['ExternalHostName'];
-                
-                // MODIFIER chaque valeur pour la region sellectionner ==> SUPPRESSION  Ancien
+
                 unset($tableauIni[$_POST['name_sim']]['RegionUUID']);
                 unset($tableauIni[$_POST['name_sim']]['Location']);
                 unset($tableauIni[$_POST['name_sim']]['InternalAddress']);
@@ -166,9 +143,8 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
                 unset($tableauIni[$_POST['name_sim']]);
             }
 
-            // Enregistrement du nouveau fichier 
             $fp = fopen (INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/RegionTemp.ini", "w");  
-            while (list($key, $val) = each($tableauIni))
+            foreach($tableauIni as $key => $val)
             {
                 fputs($fp, "[".$key."]\r\n");
                 fputs($fp, "RegionUUID          = ".$tableauIni[$key]['RegionUUID']."\r\n");
@@ -179,12 +155,9 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
                 fputs($fp, "ExternalHostName    = ".$tableauIni[$key]['ExternalHostName']."\r\n");
             }
             fclose ($fp);  
-            // Suppression de l'original
             unlink($filename); 
-            // Renommer le temp en original
             rename(INI_Conf_Moteur($_SESSION['opensim_select'],"address")."Regions/RegionTemp.ini", $filename); 
             exec_command("chmod -R 777 ".INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/");
-
 			echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Region <strong>".$_POST['NewName']."</strong> modifiee avec succes</p>";
@@ -192,7 +165,6 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 
         if ($_POST['cmd'] == 'Supprimer')
         {			
-            // MODIFIER chaque valeur pour la region sellectionner ==> SUPPRESSION  Ancien
             unset($tableauIni[$_POST['name_sim']]['RegionUUID']);
             unset($tableauIni[$_POST['name_sim']]['Location']);
             unset($tableauIni[$_POST['name_sim']]['InternalAddress']);
@@ -201,10 +173,8 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             unset($tableauIni[$_POST['name_sim']]['ExternalHostName']);
             unset($tableauIni[$_POST['name_sim']]);
 
-            // Enregistrement du nouveau fichier 
             $fp = fopen (INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/RegionTemp.ini", "w");  
-            
-            while (list($key, $val) = each($tableauIni))
+            foreach($tableauIni as $key => $val)
             {
                 fputs($fp, "[".$key."]\r\n");
                 fputs($fp, "RegionUUID          = ".$tableauIni[$key]['RegionUUID']."\r\n");
@@ -218,20 +188,13 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             fclose ($fp);  
             unlink($filename); 
             rename(INI_Conf_Moteur($_SESSION['opensim_select'],"address")."Regions/RegionTemp.ini",$filename); 
-
             exec_command("chmod -R 777 ".INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/");
-
 			echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Region <strong>".$_POST['NewName']."</strong> supprimee avec succes</p>";
         } 
     }
 
-    // ******************************************************
-    //  Affichage page principale
-    // ******************************************************
-    // ******************************************************
-    // *** Lecture Fichier Regions.ini ***
     $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/Regions.ini";
 
     if (file_exists($filename2)) {$filename = $filename2;}
@@ -243,6 +206,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     }
 
     $tableauIni = parse_ini_file($filename, true);
+
     if ($tableauIni == FALSE)
     {
         echo "<p class='alert alert-success alert-anim'>";
@@ -251,15 +215,12 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     }
     
     $i = 0;
-
 	if (count($tableauIni) >= $RegionMax) {$btn = 'disabled';}
 	else {$btn = $btnN3;}
 
-	if (INI_Conf("Parametre_OSMW","Autorized") == '1') {$btn = '';}
-	// ******************************************************
+	if (INI_Conf("Parametre_OSMW", "Autorized") == '1') {$btn = '';}
 
     echo '<p>Nombre total de Regions <span class="badge">'.count($tableauIni).'</span></p>';
-
     echo '<table class="table table-hover">';
     echo '<tr>';
     echo '<th>Name</th>';
@@ -271,7 +232,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<th>Delete</th>';
     echo '</tr>';
 
-    while (list($key, $val) = each($tableauIni))
+    foreach($tableauIni as $key => $val)
     {
         echo '<tr>';
 		echo '<form class="form-group" method="post" action="">';

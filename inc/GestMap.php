@@ -1,6 +1,4 @@
 <?php
-// include_once './inc/functions.php';
-
 if (isset($_SESSION['authentification']))
 {
 
@@ -12,18 +10,13 @@ if (isset($_SESSION['authentification']))
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
 
-    // *******************************************************
-    // Initialisation des variables ET du tableau
-    // *******************************************************
-    // Position Initial
-    $px = 1000;
-    $py = 1000;
-
+    $px = 10000;
+    $py = 10000;
     // Offset
     $ox = 0;
     $oy = 0;
 
-    // Limite de 50x50
+    // Limite de 5x5
     $max = 2;
     
     for ($x = -$max; $x < ($max - 1); $x++)
@@ -39,89 +32,85 @@ if (isset($_SESSION['authentification']))
             $Matrice[$x][$y]['port'] = "";	
             $Matrice[$x][$y]['uuid'] = "";
         } 
-    } 
-    //*******************************************************
+    }
 
-    // *******************************************************	
-    // Lecture des regions.ini et enregistrement dans Matrice
-    // *******************************************************
-    // Parcours des serveur installes
+    $sql = "SELECT * FROM moteurs";
+	$req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
 
-    $db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-    mysql_select_db($database, $db);
-
-    $sql = 'SELECT * FROM moteurs';
-    $req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
-
-    while($data = mysql_fetch_assoc($req))
+    while($data = mysqli_fetch_assoc($req))
     {
-        // Pour chaque serveur
-        $tableauIni = parse_ini_file($data['address']."Regions/Regions.ini", true);
+        $tableauIni = @parse_ini_file($data['address']."Regions/".$FichierINIRegions, true);
 
         if ($tableauIni == FALSE)
         {
             echo 'Probleme Lecture Fichier .ini '.$data['address']."Regions/Regions.ini".'<br>';
         }
 
-        // echo '<p>Serveur Name:'.$data['name'].' - Version:'.$data['version'].'</p>';
-        // while (list($keyi, $vali) = each($tableauIni))
-        while (list($keyi) = each($tableauIni))
+        foreach($tableauIni AS $key => $val)
         {
-            // **** Recuperation du port http du serveur ******		
-            // $filename = $data['address']."OpenSimDefaults.ini";
             $filename = $data['address'].$FichierINIOpensim;
-       
-            
+
             if (!$fp = fopen($filename, "r"))
             {
                 echo "Echec de l'ouverture du fichier ".$filename;
             }		
-            
-            $tabfich = file($filename); 
-            $c = count($tabfich);
 
-            for ($i = 1; $i < $c; $i++)
+            $tabfich = file($filename); 
+            $n = count($tabfich);
+            $srvOS = 9000;
+
+            for ($i = 1; $i < $n; $i++)
             {
-                // echo "<p>".$tabfich[$i]."</p>";
-                $porthttp = strstr($tabfich[$i], "http_listener_port");
-                
-                if ($porthttp)
+                // if (strpos($tabfich[$i], ";") === false || strpos($tabfich[$i], ";;") === false)
+                // strpos($tabfich[$i], "#") === false
+                if (strpos($tabfich[$i], ";" ) === false)
                 {
-                    $posEgal    = strpos($porthttp, '=');
-                    $longueur   = strlen($porthttp);
-                    $srvOS      = substr($porthttp, $posEgal + 1);
+                    // echo "<p>".$tabfich[$i]."</p>";
+                    $porthttp = strstr($tabfich[$i], "http_listener_port");
+
+                    if(!empty($porthttp))
+                    {
+                        $posEgal = strpos($porthttp, '=');
+                        $longueur = strlen($porthttp);
+                        $srvOS = substr($porthttp, $posEgal + 1);
+                    }
                 }
             }
             fclose($fp);
 
             // Recuperation des valeurs ET enregistrement des valeurs dans le tableau
             // echo $key.$tableauIni[$key]['RegionUUID'].$tableauIni[$key]['Location'].$tableauIni[$key]['InternalPort'].'<br>';
-            $location                               = explode(",", $tableauIni[$keyi]['Location']);
+            $location                               = explode(",", $val['Location']);
             $coordX                                 = $location[0] - $px - $ox;
             $coordY                                 = $location[1] - $py - $oy;
-            $Matrice[$coordX][$coordY]['name']      = $keyi;
-            $uuid                                   = str_replace("-", "", $tableauIni[$keyi]['RegionUUID']);
-            $ImgMap                                 = "http://".$tableauIni[$keyi]['ExternalHostName'].":".trim($srvOS)."/index.php?method=regionImage".$uuid;
+            $Matrice[$coordX][$coordY]['locX']      = $location[0];
+            $Matrice[$coordX][$coordY]['locY']      = $location[1];
+
+            // $Matrice[$coordX][$coordY]['name']      = $val;
+            $Matrice[$coordX][$coordY]['name']      = $key;
+
+            $uuid                                   = str_replace("-", "", $val['RegionUUID']);
+            $ImgMap                                 = "http://".$val['ExternalHostName'].":".trim($srvOS)."/index.php?method=regionImage".$uuid;
             $Matrice[$coordX][$coordY]['img']       = $ImgMap;
-            $Matrice[$coordX][$coordY]['ip']        = $tableauIni[$keyi]['ExternalHostName'];
-            $Matrice[$coordX][$coordY]['port']      = $tableauIni[$keyi]['InternalPort'];	
-            $Matrice[$coordX][$coordY]['uuid']      = $key.$tableauIni[$keyi]['RegionUUID'];
-            $Matrice[$coordX][$coordY]['hypergrid'] = $data[hypergrid];
+            $Matrice[$coordX][$coordY]['ip']        = $val['ExternalHostName'];
+            $Matrice[$coordX][$coordY]['port']      = $val['InternalPort'];	
+            $Matrice[$coordX][$coordY]['uuid']      = $val['RegionUUID'];
+            $Matrice[$coordX][$coordY]['hypergrid'] = $data['hypergrid'];
         }
     }
-    mysql_close();
+    mysqli_close($db);
 
     // ****************************
     // *** Map en construction ****
     // ****************************
-    // echo $_POST['zooming'];
+    $_SESSION['zooming_select'] = null;
+
     if (isset($_POST['zooming']))
     {
-        $widthMap = $_POST['zooming'];
-        $heightMap = $_POST['zooming'];
-
-        // $select = "";
-        $_SESSION['zooming_select'] = trim($_POST['zooming']);
+        $zooming = trim($_POST['zooming']);
+        $widthMap = $zooming;
+        $heightMap = $zooming;
+        $_SESSION['zooming_select'] = $zooming;
         if ($_SESSION['zooming_select'] == 25) {$select1 = "selected";}
         if ($_SESSION['zooming_select'] == 50) {$select2 = "selected";}
         if ($_SESSION['zooming_select'] == 100) {$select3 = "selected";}
@@ -136,8 +125,9 @@ if (isset($_SESSION['authentification']))
         if ($_SESSION['zooming_select'] == 100) {$select3 = "selected";}
         if ($_SESSION['zooming_select'] == 200) {$select4 = "selected";}
         if ($_SESSION['zooming_select'] == "") {$select5 = "selected";}
-        $widthMap = $_SESSION['zooming_select'];
-        $heightMap = $_SESSION['zooming_select'];
+        $zooming = trim($_SESSION['zooming_select']);
+        $widthMap = $zooming;
+        $heightMap = $zooming;
     }
 
     echo '<form class="form-group" method=post action="">';
@@ -157,28 +147,41 @@ if (isset($_SESSION['authentification']))
     echo '<br />';
     echo '<center>';
     echo '<table>';
-    // for ($y = $max; $y > (-$max - 1); $y--) // Limite Y
-    for ($x = -$max; $x < ($max + 1); $x++) // Limite X
+
+    for ($y = $max; $y > (-$max - 1); $y--) // Limite Y
+    // for ($x = -$max; $x < ($max + 1); $x++) // Limite X
     {
         echo '<tr>';
-        // for ($x = -$max; $x < $max+1; $x++) // Limite X
-        for($y = -$max; $y < ($max + 1); $y++) // Limite Y
+        for ($x = -$max; $x < $max + 1; $x++) // Limite X
+        // for($y = -$max; $y < ($max + 1); $y++) // Limite Y
         {
             echo '<td>';
 
-            if ($Matrice[$x][$y]['img'])
+            if (!empty($Matrice[$x][$y]['img']))
             {
-                $textemap = $Matrice[$x][$y]['name'];
-                $locX = $Matrice[$x][$y]['locX'];
-                $locY = $Matrice[$x][$y]['locY'];
+                if (!empty($Matrice[$x][$y]['name']))
+                    $textemap = strval($Matrice[$x][$y]['name']);
+                if (!empty($Matrice[$x][$y]['locX']))
+                    $locX = strval($Matrice[$x][$y]['locX']);
+                if (!empty($Matrice[$x][$y]['locY']))
+                    $locY = strval($Matrice[$x][$y]['locY']);
+
+                echo '<a href="secondlife://'.$Matrice[$x][$x]['hypergrid'].':'.$textemap.'">';
                 echo '<img class="img-responsive" src="'.$Matrice[$x][$y]['img'].'" width="'.$widthMap.'" height="'.$heightMap.'" alt="'.$textemap.'" title="'.$textemap.' '.$locX.' '.$locY.'" data-toggle="tooltip" data-placement="top">';
+                echo '</a>';
+
+                // echo '<img class="img-responsive" src="'.$Matrice[$x][$y]['img'].'" width="'.$widthMap.'" height="'.$heightMap.'" alt="'.$textemap.'" data-toggle="popover" data-placement="top" data-content="'.$textemap.'">';
+                // echo '<a href="secondlife://'.$Matrice[$x][$x]['hypergrid'].':'.$Matrice[$x][$y]['name'].'">';
+                // echo '<img src="'.$Matrice[$x][$y]['img'].'" width="'.$widthMap.'" height="'.$heightMap.'"  alt="'.$textemap.'"></a>';
             }
 
             else
             {
                 $textemap = "Water (Free)";
+                $locX = $px + $x;
+                $locY = $py + $y;
                 echo '<img class="img-responsive" src="./img/water.jpg" width="'.$widthMap.'" height="'.$heightMap.'" alt="'.$textemap.'" title="'.$textemap.' '.$locX.' '.$locY.'" data-toggle="tooltip" data-placement="top">';
-           }
+            }
             echo '</td>';
         } 
         echo '</tr>';

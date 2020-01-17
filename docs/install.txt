@@ -1,4 +1,4 @@
-Install OSMW v5.0
+Install OSMW v6.0
 =================
 - http://domain.com/osmw/install.php
 

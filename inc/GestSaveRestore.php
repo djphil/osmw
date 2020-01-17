@@ -5,19 +5,17 @@ if (isset($_SESSION['authentification']))
     echo '<h1>Gestion des Sauvegardes</h1>';
     echo '<div class="clearfix"></div>';
 
-    // verification sur la session authentification 
     if (isset($_POST['OSSelect'])) {$_SESSION['opensim_select'] = trim($_POST['OSSelect']);}
 
     echo '<p>Simulateur selectionne ';
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
 
-	//*****************************************************
-	// Si NIV 1 - Verification Moteur Autorise ************
 	if($_SESSION['osAutorise'] != '')
 	{
         $osAutorise = explode(";", $_SESSION['osAutorise']);
-
+        // echo count($osAutorise);
+        // echo $_SESSION['osAutorise'];
         for($i=0;$i < count($osAutorise);$i++)
 		{
             if(INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i])
@@ -27,24 +25,14 @@ if (isset($_SESSION['authentification']))
         }
     }
 	else {$moteursOK = "NOK";}
-    
-    /* ************************************ */
+
 	$btnN1 = "disabled";
     $btnN2 = "disabled";
     $btnN3 = "disabled";
 	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 4
 	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 3
 	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}              // Niv 2
-	if ($moteursOK == "OK")
-    {
-        if ($_SESSION['privilege'] == 1)
-        {
-            $btnN1 = "";
-            $btnN2 = "";
-            $btnN3 = "";
-        }
-    } // Niv 1 + SECURITE MOTEUR
-    /* ************************************ */
+	// if ($moteursOK == true) {if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
     /* CONSTRUCTION de la commande pour ENVOI sur la console via  SSH */
     if (isset($_POST['cmd']))
@@ -58,31 +46,36 @@ if (isset($_SESSION['authentification']))
         if (!$fp = fopen($filename,"r")) 
         {
             echo "Echec de l'ouverture du fichier ".$filename;
-        }		
-        $tabfich=file($filename); 
-        
-        for( $i = 1 ; $i < count($tabfich) ; $i++ )
-        {
-            $porthttp = strstr($tabfich[$i]," port = ");
-            $access_password = strstr($tabfich[$i]," access_password = ");
-            
-            if($porthttp)
-            {
-                $posEgal = strpos($porthttp, '=');
-                $longueur = strlen($porthttp);
-                $RemotePort = substr($porthttp, $posEgal + 1);
-            }
-            
-            if($access_password)
-            {
-                $posEgal = strpos($access_password, '=');
-                $longueur = strlen($access_password);
-                $access_password2 = trim(substr($access_password, $posEgal + 1));
-                $longueur2 = strlen($access_password2);
-                $Remote_access_password = substr($access_password2, 1, $longueur2 - 2);			
-            }
         }
-        fclose($fp);
+        
+		$tabfich = file($filename); 
+        $n = count($tabfich);
+
+        for( $i = 1; $i < $n; $i++)
+		{
+            if (strpos($tabfich[$i], ";") === false)
+            {
+                $porthttp = strstr($tabfich[$i], "port");
+                $access_password = strstr($tabfich[$i], "access_password");
+                
+                if (!empty($porthttp))
+                {
+                    $posEgal = strpos($porthttp, '=');
+                    $longueur = strlen($porthttp);
+                    $RemotePort = substr($porthttp, $posEgal + 1);
+                }
+
+                if (!empty($access_password))
+                {
+                    $posEgal = strpos($access_password, '=');
+                    $longueur = strlen($access_password);
+                    $access_password2 = trim(substr($access_password, $posEgal + 1));
+                    // $longueur2 = strlen($access_password2);
+                    // $Remote_access_password = substr($access_password2, 1,$longueur2-2 );			
+                }
+            }
+		}
+		fclose($fp);
         
         // $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($Remote_access_password));
         $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($access_password2));
@@ -107,26 +100,16 @@ if (isset($_SESSION['authentification']))
         echo '</div>';
     }
 
-    //******************************************************
-    //  Affichage page principale
-    //******************************************************
-
-    //******************************************************
-    //  CHOIX DU SIMULATEUR (CONNECTION A LA BD)
-    //******************************************************
-	$db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-	mysql_select_db($database, $db);
-
-	$sql = 'SELECT * FROM moteurs';
-	$req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
+    $sql = 'SELECT * FROM moteurs';
+    $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
 
     // echo '<h4>Selectionner un Simulateur</h4>';
-	echo '<form class="form-group" method="post" action="">';
+    echo '<form class="form-group" method="post" action="">';
     echo '<div class="form-inline">';
     echo '<label for="OSSelect"></label>Select Simulator ';
     echo '<select class="form-control" name="OSSelect">';
 
-    while($data = mysql_fetch_assoc($req))
+    while($data = mysqli_fetch_assoc($req))
     {
         // if ($data['osAutorise'] != '') {echo $data['osAutorise'];}
         // else {$osAutorise = explode(";", $data['osAutorise']); echo count($osAutorise);}
@@ -139,19 +122,19 @@ if (isset($_SESSION['authentification']))
     echo' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
     echo '</div>';
     echo'</form>';
-    mysql_close();
+    mysqli_close($db);
 
-	// *** Lecture Fichier Region.ini ***
-	$filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/".$FichierINIRegions;
-	if (file_exists($filename2)) {$filename = $filename2 ;}
+    // *** Lecture Fichier Region.ini ***
+    $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/".$FichierINIRegions;
+    if (file_exists($filename2)) {$filename = $filename2 ;}
     else {;}
 
-	$tableauIni = parse_ini_file($filename, true);
-	if ($tableauIni == FALSE){echo '<p class="alert alert-danger">Proleme de lecture du fichier .ini <strong>$filename</strong></p>';}
-	
-	// *** Lecture Fichier OpenSimDefaults ***
-	$filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address").$FichierINIOpensim;		
-	if (file_exists($filename2)) {$filename = $filename2 ;}
+    $tableauIni = parse_ini_file($filename, true);
+    if ($tableauIni == FALSE){echo '<p class="alert alert-danger">Proleme de lecture du fichier .ini <strong>$filename</strong></p>';}
+
+    // *** Lecture Fichier OpenSimDefaults ***
+    $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address").$FichierINIOpensim;		
+    if (file_exists($filename2)) {$filename = $filename2 ;}
     else {;}
 
     // **** Recuperation du port http du serveur ******		
@@ -159,27 +142,29 @@ if (isset($_SESSION['authentification']))
 	{
         echo "<p class='alert alert-danger'>Echec de l'ouverture du fichier .ini <strong>$filename</strong></p>";
     }
-    
-	$tabfich = file($filename); 
+
+    $tabfich = file($filename); 
+    $n = count($tabfich);
+    $srvOS = 9000;
 	
-    for ($i = 1 ; $i < count($tabfich) ; $i++)
-	{
-        // echo "<p>".$tabfich[$i]."</p>";
-        $porthttp = strstr($tabfich[$i], "http_listener_port");
-		
-        if($porthttp)
-		{
-			$posEgal = strpos($porthttp,'=');
-			$longueur = strlen($porthttp);
-			$srvOS = substr($porthttp, $posEgal + 1);
-		}
-	}
-	fclose($fp);
+    for( $i = 1; $i < $n; $i++)
+    {
+        if (strpos($tabfich[$i], ";") === false)
+        {
+            $porthttp = strstr($tabfich[$i], "http_listener_port");
 
-	echo '<p>Nombre total de regions <span class="badge">'.count($tableauIni).'</span></p>';
-    
-	echo '<table class="table table-hover">';
+            if (!empty($porthttp))
+            {
+                $posEgal = strpos($porthttp, '=');
+                $longueur = strlen($porthttp);
+                $srvOS = substr($porthttp, $posEgal + 1);
+            }
+        }
+    }
+    fclose($fp);
 
+    echo '<p>Nombre total de regions <span class="badge">'.count($tableauIni).'</span></p>';
+    echo '<table class="table table-hover">';
     echo '<tr>';
     echo '<th>Name</th>';
     echo '<th>Image</th>';
@@ -191,11 +176,10 @@ if (isset($_SESSION['authentification']))
     echo '<th>Action</th>';
     echo '</tr>';
 
-	while (list($key, $val) = each($tableauIni))
+    foreach($tableauIni as $key => $value)
 	{
         $uuid = str_replace("-", "", $tableauIni[$key]['RegionUUID']);
 		$ImgMap = "http://".$hostnameSSH.":".trim($srvOS)."/index.php?method=regionImage".$uuid;
-
         if (Test_Url($ImgMap) == false) {$ImgMap = "img/offline.jpg";}
 
         echo '<tr>';

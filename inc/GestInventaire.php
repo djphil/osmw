@@ -1,60 +1,38 @@
 <?php
-// Verification sur la session authentification 
 if (isset($_SESSION['authentification']))
 {   
     echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
     echo '<h1>Gestion Inventaire</h1>';
     echo '<div class="clearfix"></div>';
 
-    echo '<p>Simulateur selectionne ';
+    echo '<p>Simulateur sélectionné ';
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
-    /* ************************************ */
-    // Si NIV 1 - Verification Moteur Autorise ************
+
     if ($_SESSION['osAutorise'] != '')
     {
         $osAutorise = explode(";", $_SESSION['osAutorise']);
-        // echo count($osAutorise);
-        // echo $_SESSION['osAutorise'];
-		
         for ($i = 0; $i < count($osAutorise); $i++)
         {
             if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i]){$moteursOK = "OK";}
         }
     }
 
-    /* ************************************ */
-	$btnN1 = "disabled"; 
-    $btnN2 = "disabled"; 
+	$btnN1 = "disabled";
+    $btnN2 = "disabled";
     $btnN3 = "disabled";
 	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
 	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
 	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
+    // if ($moteursOK == true) {if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
-    /*
-    if($moteursOK == "OK")
-    {
-        if ($_SESSION['privilege'] == 1)
-        {
-            $btnN1 = ""; 
-            $btnN2 = ""; 
-            $btnN3 = "";
-        }
-    }   // Niv 1 + SECURITE MOTEUR
-    */
-    /* ************************************ */
-
-    //******************************************************
-    // CONSTRUCTION de la commande pour ENVOI sur la console via  SSH
-    //******************************************************
     if (isset($_POST['cmd']))
 	{
-        // *** Lecture Fichier OpenSimDefaults ***
 		$filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address").$FichierINIOpensim;
         if (file_exists($filename2)) {$filename = $filename2 ;}
         else {;}
-
-        // **** Recuperation du port http du serveur ******		
+	
         if (!$fp = fopen($filename,"r")) 
 		{
             echo "Echec d'ouverture du fichier ".$filename;
@@ -80,7 +58,7 @@ if (isset($_SESSION['authentification']))
 				$longueur = strlen($access_password);
 				$access_password2 = trim(substr($access_password, $posEgal + 1));
 				// $longueur2 = strlen($access_password2);
-				// $Remote_access_password = substr($access_password2, 1,$longueur2-2 );			
+				// $Remote_access_password = substr($access_password2, 1,$longueur2-2 );
 			}
 		}
 		fclose($fp);
@@ -110,21 +88,15 @@ if (isset($_SESSION['authentification']))
 		}  
 	}
 
-	// Formulaire de choix du moteur a selectionne
-    // On se connecte a MySQL
-    $db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-    mysql_select_db($database,$db);
-    
     $sql = 'SELECT * FROM moteurs';
-    $req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
-	
-    // echo '<h4>Selectionner un Simulateur</h4>';
+	$req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
+
     echo '<form class="form-group" method="post" action="">';
     echo '<div class="form-inline">';
     echo '<label for="OSSelect"></label>Select Simulator ';
     echo '<select class="form-control" name="OSSelect">';
 
-    while($data = mysql_fetch_assoc($req))
+    while($data = mysqli_fetch_assoc($req))
     {
         // if ($data['osAutorise'] != '') {echo $data['osAutorise'];}
         // else {$osAutorise = explode(";", $data['osAutorise']); echo count($osAutorise);}
@@ -137,9 +109,8 @@ if (isset($_SESSION['authentification']))
     echo' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
     echo '</div>';
     echo'</form>';
-    mysql_close();
+    mysqli_close($db);
 
-    /* ************************************ */
 	echo '<h4>Vos identifiants</h4>';
 	echo '<form method="post" action="">';
     echo '<table class="table table-hover">';
@@ -162,9 +133,7 @@ if (isset($_SESSION['authentification']))
 	echo '</tr>';
 	echo '</table>';
 	echo '</form>';
-    /* ************************************ */
 
-    /* Lecture Log Si Formulaire OK */
     if (!empty($_POST['first']) && !empty($_POST['last']) && !empty($_POST['pass']))
     {
         $aff = "";
@@ -193,7 +162,7 @@ if (isset($_SESSION['authentification']))
             // if (strstr($fcontents[$i], '[INVENTORY ARCHIVER]')
             // or strstr($fcontents[$i], '[ARCHIVER]') 
             // or strstr($fcontents[$i], '[RADMIN]'))
-                $aff .= "<p>".$fcontents[$i]."</p>";
+            $aff .= "<p>".$fcontents[$i]."</p>";
             $i++;
         }
 

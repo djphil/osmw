@@ -1,13 +1,11 @@
-<span class="label label-default label-primary">
-    <?php echo $webui_actual_language; ?>
-</span>
 <?php
+echo '<span class="label label-primary">'.$actual_language.'</span>';
 foreach ($languages as $langCode => $langName)
 {
-    if ($langCode != $webui_language_code)
+    if ($langCode != $language_code)
     {
         echo '
-            <a href="?page='.$_GET[page].'&amp;lang=' . $langCode . '">
+            <a href="?page='.isset($_GET['page']).'&amp;lang=' . $langCode . '">
                 <img src="img/flags/flag-'. $langCode . '.png" alt="' . $langName . '" title="' . $langName . '" />
             </a>
         ';

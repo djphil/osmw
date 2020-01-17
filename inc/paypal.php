@@ -6,7 +6,7 @@
     <input type="hidden" name="currency_code" value="EUR">
     <input type="hidden" name="hosted_button_id" value="N2MDARK4GPWH2">
     <div class="text-center">
-        <input type="image" class="btn btn-warning" src="https://www.paypalobjects.com/fr_FR/FR/i/btn/btn_donateCC_LG.gif" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sécurisée !">
-        <img alt="" src="https://www.paypalobjects.com/fr_FR/i/scr/pixel.gif" width="1" height="1">
+        <input type="image" class="btn btn-warning" src="img/paypal.gif" name="submit" alt="PayPal - la solution de paiement en ligne la plus simple et la plus sÃ©curisÃ©e !">
+        <img alt="" src="img/pixel.gif" width="1" height="1">
     </div>
 </form>

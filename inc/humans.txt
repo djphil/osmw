@@ -1,0 +1,20 @@
+﻿/* the humans responsible & colophon */
+/* humanstxt.org */
+
+/* ABOUT ME */
+  Philippe Lemaire
+  Avatar: djphil / dj phil
+  Site: www.infodjphil.net
+  Twitter: https://twitter.com/infodjphil
+  Github: https://github.com/djphil
+  Location: Bruxelles - Belgique
+
+/* THANKS */
+  Bootstrap : (http://getbootstrap.com//)
+  ...
+
+/* SITE */
+  Last update: 01/01/2020
+  Standards: HTML5, CSS3
+  Components: Bootstrap, jQuery...
+  Software: Sublime Text, NotePad++

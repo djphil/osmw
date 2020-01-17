@@ -14,18 +14,13 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 	if( $_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 3
 	if( $_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}              // Niv 2
 	if( $_SESSION['privilege'] == 1) {$btnN1 = "";}                           // Niv 1
-
-	$db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-	mysql_select_db($database, $db);
+    // if ($moteursOK == true){if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
  	echo '<form class="form-group" method="post" action="">';
     echo '<input type="hidden" name="cmd" value="Ajouter" '.$btnN3.'>';
 	echo '<button class="btn btn-success" type="submit" value="Ajouter un Simulateur" '.$btnN3.'><i class="glyphicon glyphicon-ok"></i> Ajouter un Simulateur</button>';
 	echo '</form>';
- 
-	//******************************************************
-	// CONSTRUCTION de la commande pour ENVOI sur la console via  SSH
-	//******************************************************
+
 	if (isset($_POST['cmd']))
 	{
 		if($_POST['cmd'] == 'Ajouter')
@@ -51,18 +46,18 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             echo '</tr></table></form>';
 		}
 
-		if ($_POST['cmd'] == 'Enregistrer')
+		if (isset($_POST['cmd']) && $_POST['cmd'] == 'Enregistrer')
 		{	
 			$sqlIns = "INSERT INTO moteurs (`osAutorise` ,`id_os` ,`name` ,`version` ,`address` , `DB_OS`, `hypergrid`)
                         VALUES (NULL , '".$_POST['NewName']."', '".$_POST['NewName']."', '".$_POST['version']."', '".$_POST['address']."', '".$_POST['DB_OS']."', '".$_POST['hypergrid']."')";
-			$reqIns = mysql_query($sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysql_error());
+			$reqIns = mysqli_query($db, $sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysqli_error($db));
             
 			echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Simulateur <strong>".$_POST['NewName']."</strong> ajoute avec succes</p>";
 		} 
         
-		if($_POST['cmd'] == 'Update')
+		if (isset($_POST['cmd']) && $_POST['cmd'] == 'Update')
 		{
 			$sqlIns = "
                 UPDATE moteurs 
@@ -75,37 +70,30 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
                     hypergrid = '".$_POST['hypergrid']."'
                 WHERE id_os = '".$_POST['NewName']."'
             ";
-            $reqIns = mysql_query($sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysql_error());
+            $reqIns = mysqli_query($db, $sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysqli_error($db));
 			echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Simulateur <strong>".$_POST['NewName']."</strong> mis a jour avec succes</p>";
 		}
 
-		if($_POST['cmd'] == 'Supprimer')
+		if (isset($_POST['cmd']) && $_POST['cmd'] == 'Supprimer')
 		{			
 			$sqlIns = "DELETE FROM moteurs WHERE `moteurs`.`osAutorise` = ".$_POST['osAutorise'];
-			$reqIns = mysql_query($sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysql_error());
+			$reqIns = mysqli_query($db, $sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysqli_error($db));
 			echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Simulateur <strong>".$_POST['NewName']."</strong> supprime avec succes</p>";
 		}
     }
 
-    //******************************************************
-    //  Affichage page principale
-    //******************************************************
-	$db = mysql_connect($hostnameBDD, $userBDD, $passBDD);
-	mysql_select_db($database, $db);
-	// *** Lecture BDD config  ***
 	$sql = 'SELECT * FROM moteurs';
-	$req = mysql_query($sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysql_error());
+	$req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
     
 	if (NbOpensim() >= 4) {$btn = 'disabled';}
 	else {$btn = $btnN3;}
 
 	if (INI_Conf("Parametre_OSMW", "Autorized") == '1') {$btn = '';}
-    
-    // echo '<h4>Liste des Simulateurs ajoutes au Manager</h4>';
+
     echo '<p>Nombre total de Simulateurs <span class="badge">'.NbOpensim().'</span></p>';
 	echo '<table class="table table-hover">';
 	echo '<tr>';
@@ -118,7 +106,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<th>Delete</th>';
 	echo '</tr>';
 
-	while($data = mysql_fetch_assoc($req))
+	while($data = mysqli_fetch_assoc($req))
 	{
 		echo '<tr>';
 		echo '<form method=post action="">';
@@ -136,7 +124,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 		echo '</tr>';
 	}
 	echo '</table>';
-    mysql_close();
+    mysqli_close($db);
 }
 else {header('Location: index.php');}
 ?>

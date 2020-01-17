@@ -1,8 +1,8 @@
 /* CSS v0.1 by djphil */
-*{margin: 0px; padding: 0px;}
+
+body {padding-top: 25px;}
+.options {margin-bottom: 5px;}
 img {border: 0px;}
-/* body {margin-top: 40px;} */
-body {padding-top: 20px;}
 
 .iframe-container {    
     padding-bottom: 60%;
@@ -27,7 +27,7 @@ body {padding-top: 20px;}
 }
 
 .title span {
-    color: rgba(200, 16, 16, 0.75);
+    color: rgba(150, 16, 16, 0.75);
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
 }
 
@@ -46,7 +46,7 @@ body {padding-top: 20px;}
         0 5px 10px rgba(0, 0, 0, 0.25), 
         0 10px 10px rgba(0, 0, 0, 0.2), 
         0 20px 20px rgba(0, 0, 0, 0.15);
-  -webkit-transition: .2s all linear;
+        -webkit-transition: .2s all linear;
 }
 
 .title:hover {cursor: text;}
@@ -79,4 +79,76 @@ pre, .preformat {
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 1px rgba(255, 255, 255, 0.3);
     -moz-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 1px rgba(255, 255, 255, 0.3);
     -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+
+/* BOOTSTRAP LOGIN FORM */
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+
+}
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+  margin-bottom: 10px;
+}
+.form-signin .checkbox {
+  font-weight: normal;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="text"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.progress .progress-bar {
+    -moz-animation-name: animateBar;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease-in;
+    -moz-animation-duration: .4s;
+
+    -webkit-animation-name: animateBar;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease-in;
+    -webkit-animation-duration: .4s;
+
+    animation-name: animateBar;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: .4s;
+}
+
+@-moz-keyframes animateBar {
+    0% {-moz-transform: translateX(-100%);}
+    100% {-moz-transform: translateX(0);}
+}
+@-webkit-keyframes animateBar {
+    0% {-webkit-transform: translateX(-100%);}
+    100% {-webkit-transform: translateX(0);}
+}
+@keyframes animateBar {
+    0% {transform: translateX(-100%);}
+    100% {transform: translateX(0);}
 }

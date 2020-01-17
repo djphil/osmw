@@ -1,134 +1,113 @@
--- phpMyAdmin SQL Dump
--- version 4.2.11
--- http://www.phpmyadmin.net
+-- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
 --
--- Client :  127.0.0.1
--- Généré le :  Jeu 27 Août 2015 à 23:50
--- Version du serveur :  5.6.21
--- Version de PHP :  5.6.3
-
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
+-- Host: localhost    Database: osmw5
+-- ------------------------------------------------------
+-- Server version	5.6.23-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Base de données :  `managerweb`
+-- Table structure for table `config`
 --
 
--- --------------------------------------------------------
-
---
--- Structure de la table `config`
---
-
-CREATE TABLE IF NOT EXISTS `config` (
-`id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `config`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `cheminAppli` varchar(50) NOT NULL,
   `destinataire` varchar(50) NOT NULL,
   `Autorized` int(2) NOT NULL,
   `NbAutorized` int(2) NOT NULL,
   `VersionOSMW` varchar(50) NOT NULL,
-  `urlOSMW` varchar(255) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+  `urlOSMW` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Contenu de la table `config`
+-- Dumping data for table `config`
 --
 
-INSERT INTO `config` (`id`, `cheminAppli`, `destinataire`, `Autorized`, `NbAutorized`, `VersionOSMW`, `urlOSMW`) VALUES
-(1, '/osmw/', 'mail@google.com', 1, 5, 'v5.0', '/osmw/');
-
--- --------------------------------------------------------
+LOCK TABLES `config` WRITE;
+/*!40000 ALTER TABLE `config` DISABLE KEYS */;
+INSERT INTO `config` VALUES (1,'/osmw/','contact@mail.com',1,5,'Version 5.5','/osmw/');
+/*!40000 ALTER TABLE `config` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Structure de la table `moteurs`
+-- Table structure for table `moteurs`
 --
 
-CREATE TABLE IF NOT EXISTS `moteurs` (
-`osAutorise` tinyint(4) NOT NULL,
+DROP TABLE IF EXISTS `moteurs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `moteurs` (
+  `osAutorise` tinyint(4) NOT NULL AUTO_INCREMENT,
   `id_os` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
   `version` varchar(50) NOT NULL,
   `address` varchar(50) NOT NULL,
   `DB_OS` varchar(50) NOT NULL,
-  `hypergrid` varchar(255) NOT NULL
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+  `hypergrid` varchar(255) NOT NULL,
+  PRIMARY KEY (`osAutorise`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Contenu de la table `moteurs`
+-- Dumping data for table `moteurs`
 --
 
-INSERT INTO `moteurs` (`osAutorise`, `id_os`, `name`, `version`, `address`, `DB_OS`, `hypergrid`) VALUES
-(1, 'mygrid', 'mygrid', 'v0.8.2 (Dev)', 'C:/opensim/mygrid/bin/', 'mygrid', 'mygrid.com:8002'),
-
--- --------------------------------------------------------
+LOCK TABLES `moteurs` WRITE;
+/*!40000 ALTER TABLE `moteurs` DISABLE KEYS */;
+INSERT INTO `moteurs` VALUES (1,'Opensim_1','FrancoGrid','Opensim 0.8.1','C:/OpenSimulator/opensim/','OpensimDB','hg.francogrid.org:80');
+/*!40000 ALTER TABLE `moteurs` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
--- Structure de la table `users`
+-- Table structure for table `users`
 --
 
-CREATE TABLE IF NOT EXISTS `users` (
-`id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `firstname` varchar(15) NOT NULL,
   `lastname` varchar(15) NOT NULL,
   `password` text NOT NULL,
   `privilege` int(11) NOT NULL,
-  `osAutorise` varchar(50) NOT NULL
+  `osAutorise` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Contenu de la table `users`
+-- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `firstname`, `lastname`, `password`, `privilege`, `osAutorise`) VALUES
-(1, 'super', 'admin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 4, '1|2|3|4|5|'),
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'Super','Admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8',4,'');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
---
--- Index pour les tables exportées
---
-
---
--- Index pour la table `config`
---
-ALTER TABLE `config`
- ADD PRIMARY KEY (`id`);
-
---
--- Index pour la table `moteurs`
---
-ALTER TABLE `moteurs`
- ADD PRIMARY KEY (`osAutorise`);
-
---
--- Index pour la table `users`
---
-ALTER TABLE `users`
- ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT pour les tables exportées
---
-
---
--- AUTO_INCREMENT pour la table `config`
---
-ALTER TABLE `config`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=4;
---
--- AUTO_INCREMENT pour la table `moteurs`
---
-ALTER TABLE `moteurs`
-MODIFY `osAutorise` tinyint(4) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
---
--- AUTO_INCREMENT pour la table `users`
---
-ALTER TABLE `users`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=1;
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2015-09-07 18:53:28

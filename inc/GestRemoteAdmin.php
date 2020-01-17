@@ -1,9 +1,7 @@
 <?php 
-include_once 'inc/functions.php';
+// include_once 'inc/functions.php';
 // include_once 'inc/xmlrpc.php';
 
-// Verification sur la session authentification
-// if (isset($_SESSION['authentification']))
 if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 {
     echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
@@ -26,10 +24,9 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 
     $channel="d8e93046-dcfc-4a65-81ab-25554eee893f";
 
-    // "up, upx2, down, downx2, white1", "red1","green1","blue1","steel1","orange1","yellow1","pink1","purple1","sky1","lavander1","OFF"
-    if ($_POST['cmd'] == "Envoyer")
+    if (isset($_POST['cmd']) && $_POST['cmd'] == "Envoyer")
     {
-        $myRemoteAdmin = new RemoteAdmin('localhost', 9000, '***');
+        $myRemoteAdmin = new RemoteAdmin('localhost', 12000, '***'); // unknown
         $params = array(
             'Channel' => 'string', 
             'IntValue' => 'int', 
@@ -38,7 +35,8 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             'IntValue' => (int)$POST_int,
             'StringValue' => $POST_string
         );
-        $myRemoteAdmin->SendCommand('llRemoteData', $params);	
+        // $myRemoteAdmin->SendCommand('llRemoteData', $params);
+        $myRemoteAdmin->SendCommand('admin_console_command', $params);
 
         if ($retour === FALSE)
         {

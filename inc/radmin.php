@@ -35,7 +35,7 @@ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWIS
 
 class RemoteAdmin
 {
-    function RemoteAdmin($sURL, $sPort, $pass)
+    function __construct($sURL, $sPort, $pass)
     {
         $this->simulatorURL = $sURL;   // String
         $this->simulatorPort = $sPort; // Integer
