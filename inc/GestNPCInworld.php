@@ -23,8 +23,8 @@ if (isset($_POST['parameter']))
     $parameter = mysqli_real_escape_string($db, $_POST['parameter']);
 
     // ENREGISTREMENT DU GESTIONNAIRE DE NPC
-	if ($parameter == "REG_WEB_NPC" )
-	{
+    if ($parameter == "REG_WEB_NPC" )
+    {
         // Si il existe on le met a jour, sinon on l'insert ...
         $uuid = mysqli_real_escape_string($db, $_POST['uuid']);
         $region = mysqli_real_escape_string($db, $_POST['region']);
@@ -58,22 +58,21 @@ if (isset($_POST['parameter']))
             echo "Info_NPC, Mise à jour de votre NPC dans la base de données effectué avec succès ...";
         }
 
-		$FILE_NPC_TIMER = $region.".txt";
+        $FILE_NPC_TIMER = $region.".txt";
 
         if (!file_exists($FILE_NPC_TIMER))
         {
             $f = fopen($FILE_NPC_TIMER, "x+");
             fclose($f);
-            
             echo "Info_NPC, Mise a jour de votre NPC dans le fichier ".$FILE_NPC_TIMER." effectué avec succès ...";
         }
         echo "Info_NPC, Le fichier ".$FILE_NPC_TIMER." existe déjà ...";
         echo "Info_NPC, Votre Gestionnaire de NPC est opérationnel, Bonne utilisation ...";
-	}
+    }
 
     // ENREGISTREMENT DU NPC CREER
     if ($parameter == "NPC_CREATE")
-	{
+    {
         $uuid = mysqli_real_escape_string($db, $_POST['uuid']);
         $region = mysqli_real_escape_string($db, $_POST['region']);
         $firstname = mysqli_real_escape_string($db, $_POST['firstname']);
@@ -109,7 +108,7 @@ if (isset($_POST['parameter']))
         echo 'Info_NPC, Liste NPC, '.$numrow0.' NPCs, '.$listeNPC.',';
     }
 
-        // ENREGISTREMENT DES OBJETS / APPARENCE / ANIMATION
+    // ENREGISTREMENT DES OBJETS / APPARENCE / ANIMATION
     if ($parameter == "LISTE_OBJ")
     {
         $uuid = mysqli_real_escape_string($db, $_POST['uuid']);
