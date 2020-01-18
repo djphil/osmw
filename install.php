@@ -102,7 +102,7 @@
             goto end;
         }
 
-        if (!mysqli_select_db($base))
+        if (!mysqli_select_db($con, $base))
         {
             echo '<div class="alert alert-danger">Mauvais nom de base de données, installation interompue ...</div>';
             echo '<div class="col-sm-offset-4 col-sm-4">';
