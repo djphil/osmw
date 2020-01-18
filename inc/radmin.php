@@ -67,25 +67,20 @@ class RemoteAdmin
             }
         }
 
-		$xml .= '</struct></value></param></params></methodCall>';
-
-		//
+        $xml .= '</struct></value></param></params></methodCall>';
         // echo $xml;
-        //
 
-		// Now building headers and sending the data ;)
+        // Now building headers and sending the data ;)
         $host = $this->simulatorURL;
         $port = $this->simulatorPort;
         $timeout = 5; // Timeout in seconds
+        error_reporting(0);
+        $fp = fsockopen($host, $port, $errno, $errstr, $timeout);
 
-		error_reporting(0);
+        // If contacting host timeouts or impossible to create the socket, the method returns FALSE
+        if (!$fp) {return FALSE;}
 
-		$fp = fsockopen($host, $port, $errno, $errstr, $timeout);
-        
-         // If contacting host timeouts or impossible to create the socket, the method returns FALSE
-		if (!$fp) {return FALSE;}
-        
-		else
+        else
         {
             fputs($fp, "POST / HTTP/1.1\r\n");
             fputs($fp, "Host: $host\r\n");
@@ -94,20 +89,20 @@ class RemoteAdmin
             fputs($fp, "Connection: close\r\n\r\n");
             fputs($fp, $xml);
             $res = "";
-            
-			while(!feof($fp))
-			{
+
+            while(!feof($fp))
+            {
                 $res .= fgets($fp, 128);
             }
-            
-			fclose($fp);
+
+            fclose($fp);
             $response = substr($res, strpos($res, "\r\n\r\n"));;
-            
-			// Now parsing the XML response from RemoteAdmin ;)
+
+            // Now parsing the XML response from RemoteAdmin ;)
             $result = array();
-            
-			if (preg_match_all('#<name>(.+)</name><value><(string|int)>(.*)</\2></value>#U', $response, $regs, PREG_SET_ORDER))
-		    {
+
+            if (preg_match_all('#<name>(.+)</name><value><(string|int)>(.*)</\2></value>#U', $response, $regs, PREG_SET_ORDER))
+            {
                 foreach($regs as $key=>$val)
                 {
                     $result[$val[1]] = $val[3];

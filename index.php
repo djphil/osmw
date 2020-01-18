@@ -27,7 +27,7 @@ if ($a == 'logout')
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>OpenSimulator Manager Web</title>
+    <title>OpenSimulator Manager Web v6.0</title>
     <meta name="description" content="">
     <meta name="author" content="Philippe Lemaire (djphil)">
     <link rel="icon" href="img/favicon.ico">
@@ -67,7 +67,7 @@ if ($recaptcha && !empty($_POST["g-recaptcha"]))
     }
 
     if ($response != null && $response->success)
-	{
+    {
         // echo '<div id="alert" class="alert alert-success alert-dismissible" role="alert">Recaptcha success ...</div>';
     }
 
@@ -184,18 +184,18 @@ if ($translator && isset($_SESSION['authentification']))
 <?php
 if (isset($_SESSION['authentification']))
 {
-	if (isset($_POST['OSSelect']))
+    if (isset($_POST['OSSelect']))
     {
         $_SESSION['opensim_select'] = trim($_POST['OSSelect']);
     }
 
-	include_once 'inc/navbar.php';
+    include_once('inc/navbar.php');
     
     if (isset($_GET['a']) && !empty($_GET['a']))
     {
         $a = $_GET['a'];
         if ($a == "1") {include('inc/GestSims.php');}               // # Gestion sim v6.0
-        if ($a == "2") {include('inc/GestSaveRestore.php');}        // # Gestion backup sim v6.0
+        if ($a == "2") {include('inc/GestBackup.php');}             // # Gestion backups v6.0
         if ($a == "3") {include('inc/GestTerrain.php');}            // # Gestion Terrain v6.0
         if ($a == "4") {include('inc/GestInventaire.php');}         // # Exporter un inventaire v6.0
         if ($a == "5") {include('inc/GestOpensim.php');}            // admin // # Edition des fichiers de conf Opensim propre au moteur V5
@@ -209,7 +209,7 @@ if (isset($_SESSION['authentification']))
         // if ($a == "13") {include('inc/GEstHelp.php');}           // # Aide V4 (Obsolet)
         if ($a == "14") {include('inc/GestAbout.php');}             // # Les remerciements v6.0
         if ($a == "15") {include('inc/GestUsers.php');}             // admin // # Gestion des utilisateurs v6.0
-        if ($a == "16") {include('inc/GestBackup.php');}            // admin // # Gestion des sauvegardes v6.0
+        // if ($a == "16") {include('inc/GestBackup.php');}         // admin // # Gestion des sauvegardes v6.0
         if ($a == "17") {include('inc/GestMoteur.php');}            // admin // # Gestion des moteurs v6.0
         if ($a == "18") {include('inc/GestConfig.php');}            // admin // # Configuration de OSMW v6.0
         // if ($a == "19") {include('inc/GestRemoteAdmin.php');}    // admin //	# Commande remote admin personalise (TODO)
@@ -220,7 +220,7 @@ if (isset($_SESSION['authentification']))
     }
 
     else
-	{
+    {
         echo '<p class="pull-right"><span class="label label-danger">Espace Sécurisé Niveau '.$_SESSION['privilege'].'</span></p>';
         echo '<h1>Home</h1>';
         echo '<div class="clearfix"></div>';
@@ -256,21 +256,21 @@ if (isset($_SESSION['authentification']))
             if ($data['id_os'] == $_SESSION['opensim_select']) {$sel = "selected";}
             echo '<option value="'.$data['id_os'].'" '.$sel.'>'.$data['name'].' '.$data['version'].'</option>';
         }
-        
+
         echo '</select>';
         echo ' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
         echo '</div>';
         echo '</form>';
         ?>
 
-		<?php if(isset($_SESSION['flash'])): ?>
-			<?php foreach($_SESSION['flash'] as $type => $message): ?>
-				<div class="alert alert-<?php echo $type; ?> alert-anim">
-					<?php echo $message; ?>
-				</div>
-			<?php endforeach; ?>
-			<?php unset($_SESSION['flash']); ?>
-		<?php endif; ?>
+        <?php if(isset($_SESSION['flash'])): ?>
+            <?php foreach($_SESSION['flash'] as $type => $message): ?>
+                <div class="alert alert-<?php echo $type; ?> alert-anim">
+                    <?php echo $message; ?>
+                </div>
+            <?php endforeach; ?>
+            <?php unset($_SESSION['flash']); ?>
+        <?php endif; ?>
 
         <div class="list-group">
             <a class="list-group-item" href="?a=1">Gestion des Régions</a>
@@ -350,7 +350,7 @@ else { ?>
         <label><input type="checkbox" name="remember" value="1" id="Remember"> Remember me</label>
     </div>
 
-    <button class="btn btn-lg btn-default btn-block" type="submit">
+    <button class="btn btn-primary btn-block" type="submit">
         <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> Authentification
     </button>
 </form>
@@ -363,7 +363,6 @@ else { ?>
         OpenSimulator Manager Web <?php echo date('Y'); ?> v<?php echo INI_Conf('VersionOSMW', 'VersionOSMW'); ?> by djphil (CC-BY-NC-SA 4.0)
     </p>
 </footer>
-
 </div>
 
 <script src="js/jquery.min.js"></script>
