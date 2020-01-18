@@ -65,30 +65,42 @@
     <?php
     if (isset($_POST['etape']) AND $_POST['etape'] == 1)
     {
-        define('RETOUR', '<input class="btn btn-primary" type="button" value="Retour au formulaire" onclick="history.back()">');
+        $file = 'inc/config.php';
 
-        $fichier = 'inc/config.php';
-
-        if (file_exists($fichier) AND filesize($fichier ) > 0)
+        if (file_exists($file) AND filesize($file ) > 0)
         {
-            exit('<div class="alert alert-danger">Fichier de configuration existant, installation interompue ...</div>'. RETOUR);
+            echo '<div class="alert alert-danger">Fichier de configuration existant, installation interompue ...</div>';
+            echo '<div class="col-sm-offset-4 col-sm-4">';
+            echo '<p><button class="btn btn-primary btn-block" type="submit" onclick="history.back()">Retour</button></p>';
+            echo '</div>';
+            goto end;
         }
 
         $hote   = trim($_POST['hote']);
         $login  = trim($_POST['login']);
         $pass   = trim($_POST['mdp']);
         $base   = trim($_POST['base']);
+        $con    = mysqli_connect($hote, $login, $pass, $base);
+        if (mysqli_connect_errno()) {echo "Failed to connect to MySQL: ".mysqli_connect_error();}
 
-        if (!mysql_connect($hote, $login, $pass))
+        if (!$con)
         {
-            exit('<div class="alert alert-danger">Mauvais parametres de connexion, installation interompue ...</div>'. RETOUR);
+            echo '<div class="alert alert-danger">Mauvais paramètres de connexion, installation interompue ...</div>';
+            echo '<div class="col-sm-offset-4 col-sm-4">';
+            echo '<p><button class="btn btn-primary btn-block" type="submit" onclick="history.back()">Retour</button></p>';
+            echo '</div>';
+            goto end;
         }
 
-        if (!mysql_select_db($base))
+        if (!mysqli_select_db($base))
         {
-            exit('<div class="alert alert-danger">Mauvais nom de base, installation interompue ...</div>'. RETOUR);
+            echo '<div class="alert alert-danger">Mauvais nom de base de données, installation interompue ...</div>';
+            echo '<div class="col-sm-offset-4 col-sm-4">';
+            echo '<p><button class="btn btn-primary btn-block" type="submit" onclick="history.back()">Retour</button></p>';
+            echo '</div>';
+            goto end;
         }
-
+        
         $texte = '
 <?php
 $hostnameBDD = "'.$hote.'";
@@ -129,17 +141,25 @@ $secret    = "***";
 $lang      = "fr";
 ?>';
 
-        if (!$ouvrir = fopen($fichier, 'w'))
+        if (!$ouvrir = fopen($file, 'w'))
         {
-            exit('<div class="alert alert-danger">Impossible d\'ouvrir le fichier : <strong>'. $fichier .'</strong>, installation interompue ...</div>'. RETOUR);
+            echo '<div class="alert alert-danger">Impossible d\'ouvrir le fichier : <strong>'.$file.'</strong>, installation interompue ...</div>';
+            echo '<div class="col-sm-offset-4 col-sm-4">';
+            echo '<p><button class="btn btn-primary btn-block" type="submit" onclick="history.back()">Retour</button></p>';
+            echo '</div>';
+            goto end;
         }
 
         if (fwrite($ouvrir, $texte) == FALSE)
         {
-            exit('<div class="alert alert-danger">Impossible d\'écrire dans le fichier : <strong>'. $fichier .'</strong>, installation interompue ...</div>'. RETOUR);
+            echo '<div class="alert alert-danger">Impossible d\'écrire dans le fichier : <strong>'.$file.'</strong>, installation interompue ...</div>';
+            echo '<div class="col-sm-offset-4 col-sm-4">';
+            echo '<p><button class="btn btn-primary btn-block" type="submit" onclick="history.back()">Retour</button></p>';
+            echo '</div>';
+            goto end;
         }
 
-        echo '<div class="alert alert-success">Creation du fichier de configuration effectuee avec success ...</div>';
+        echo '<div class="alert alert-success">Création du fichier de configuration effectuée avec succès ...</div>';
         fclose($ouvrir);
 
         $requetes = '';
@@ -163,7 +183,7 @@ $lang      = "fr";
             }
         }
 
-        echo '<div class="alert alert-success">Installation des tables dans la base de donnees effectuee avec success ...</div>';
+        echo '<div class="alert alert-success">Installation effectuée avec succès ...</div>';
         echo '<div class="alert alert-warning">Veuillez supprimer le fichier <strong>install.php</strong> du server ...</div>';
         echo '<form class="form-group" action="" method="post">';
         echo '<input type="hidden" name="delete" value="1" />';
@@ -172,6 +192,7 @@ $lang      = "fr";
         echo '</div>';
         echo '</form>';
     }
+    end:
     ?>
     <div class="clearfix"></div>
 
