@@ -28,13 +28,13 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<div class="clearfix"></div>';
 
     $select_npc = !empty($_POST["select_npc"]) ? $_POST["select_npc"] : NULL_KEY;
-	$sqlA = "SELECT * FROM `osnpc_terminals` WHERE uuid='".$regionUUID."'" ;
-	$reqA = mysqli_query($db, $sqlA) or die('Erreur SQL !<br />'.$sqlA.'<br />'.mysqli_error($db));
-	$dataA = mysqli_fetch_assoc($reqA);
+    $sqlA = "SELECT * FROM `osnpc_terminals` WHERE uuid='".$regionUUID."'" ;
+    $reqA = mysqli_query($db, $sqlA) or die('Erreur SQL !<br />'.$sqlA.'<br />'.mysqli_error($db));
+    $dataA = mysqli_fetch_assoc($reqA);
 
     // $object_uuid = $dataA['uuid'];
     $regionName = $dataA['region'];
-	$FILE_NPC = $regionName.".txt";	
+    $FILE_NPC = $regionName.".txt";	
 
     if (isset($_POST["parameter"]) && $_POST["parameter"] == "WEB")
     {
@@ -68,7 +68,8 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysql_error($db));
         }		
 
-        if (isset($_POST["SAY"]))	{
+        if (isset($_POST["SAY"]))
+        {
             $message = str_replace(" ", "_", $_POST["message"]);
             EcritureFichier($FILE_NPC,"Gestion_NPC,SAY,".$select_npc.",".$message.",section4,".$_POST["regionUUID"]);
         }
@@ -110,7 +111,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             $sql0 = "DELETE FROM `inventaire` WHERE region='".$_POST["regionName"]."'" ;
             $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
             $sql0 = "DELETE FROM `osnpc_terminals` WHERE region='".$_POST["regionName"]."'" ;
-            $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));		
+            $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
         }
     }
 
@@ -140,7 +141,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Select</button> ';
     echo '<button type="submit" class="btn btn-info"><i class="glyphicon glyphicon-ok"></i> Ping</button> ';
     echo' <button type="submit" class="btn btn-primary"><i class="glyphicon glyphicon-refresh"></i> Refresh</button> ';
-    
+
     echo '</div>';
     echo'</form>';
 
@@ -160,7 +161,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<td><input type="text" class="form-control" name="coordY" placeholder="Position Y ..." value=""></td>';
     echo '<td><input type="text" class="form-control" name="coordZ" placeholder="Position Z ..." value=""></td>';
     echo '</tr>';
-    
+
     echo '<tr>';
     echo '<td><input type="text" class="form-control" name="firstname_NPC" placeholder="Prenom"></td>';
     echo '<td><input type="text" class="form-control" name="lastname_NPC" placeholder="Nom"></td>';

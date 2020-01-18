@@ -20,14 +20,12 @@ if (isset($_SESSION['authentification']))
         }
     }
 
-	$btnN1 = "disabled";
-    $btnN2 = "disabled";
-    $btnN3 = "disabled";
-	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
-	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
-	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
     // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
-    if ($moteursOK == true) {if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
+    if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
     if (isset($_POST['cmd']) && $_POST['cmd'] == "Charger")
     { 

@@ -4,32 +4,30 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
     echo '<h1>Gestion des Utilisateurs</h1>';
     echo '<div class="clearfix"></div>';
-    
+
     echo '<p>Simulateur selectionne ';
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
 
-	$btnN1 = "disabled";
-	$btnN2 = "disabled";
-	$btnN3 = "disabled";
-	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 4	
-	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 3
-	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}			  // Niv 2
-	if ($_SESSION['privilege'] == 1) {$btnN1 = "";}					          // Niv 1
-	// if ($moteursOK == true) {if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
+    $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1
+    // if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
-	if (isset($_POST['cmd']))
-	{
-		$clesprivilege = "";
+    if (isset($_POST['cmd']))
+    {
+        $clesprivilege = "";
 
         /*ACTION BOUTON*/
-		if ($_POST['cmd'] == 'Reset')
-		{
-            echo '<h3>Modifier le Mot de passa</h3>';
-			echo '<form method="post" action="">';
-			echo '<table class="table table-hover">';
-			echo '<input type="hidden" name="oldFirstName" value="'.$_POST['NewFirstName'].'" >';
-			echo '<input type="hidden" name="oldLastName" value="'.$_POST['NewLastName'].'" >';
+        if ($_POST['cmd'] == 'Reset')
+        {
+            echo '<h3>Modifier le Mot de passe</h3>';
+            echo '<form method="post" action="">';
+            echo '<table class="table table-hover">';
+            echo '<input type="hidden" name="oldFirstName" value="'.$_POST['NewFirstName'].'" >';
+            echo '<input type="hidden" name="oldLastName" value="'.$_POST['NewLastName'].'" >';
 
             echo '<tr>';
             echo '<th>Prenom</th>';
@@ -39,24 +37,24 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             echo '<th>Action</th>';
             echo '</tr>';
 
-			echo '<tr>';
+            echo '<tr>';
             echo '<td>'.$_POST['NewFirstName'].'</td>';
             echo '<td>'.$_POST['NewLastName'].'</td>';
-			echo '<td><input class="form-control" type="password" name="NewPass1" value="" '.$btnN3.'></td>';
-			echo '<td><input class="form-control" type="password" name="NewPass2" value="" '.$btnN3.'></td>';
-			echo '<td><input class="btn btn-success" type="submit" value="Change" name="cmd" '.$btnN3.'></td>';
-			echo '</tr>';
-			echo '</table>';
-			echo '</form>';
-		}
+            echo '<td><input class="form-control" type="password" name="NewPass1" value="" '.$btnN3.'></td>';
+            echo '<td><input class="form-control" type="password" name="NewPass2" value="" '.$btnN3.'></td>';
+            echo '<td><input class="btn btn-success" type="submit" value="Change" name="cmd" '.$btnN3.'></td>';
+            echo '</tr>';
+            echo '</table>';
+            echo '</form>';
+        }
 
-		if ($_POST['cmd'] == 'Ajouter')
-		{
+        if ($_POST['cmd'] == 'Ajouter')
+        {
             echo '<button class="btn btn-danger pull-right" type="submit" value="Annuler" onclick=location.href="index.php?a=15" '.$btnN3.'>';
             echo '<i class="glyphicon glyphicon-remove"></i> Annuler</button>';
             echo '<h3>Ajouter un Utilisateur</h3>';
             echo '<form method="post" action="">';
-			echo '<table class="table table-hover">';
+            echo '<table class="table table-hover">';
             echo '<tr>';
             echo '<th>Simulateurs</th>';
             echo '<th>Privilege</th>';
@@ -66,14 +64,14 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             echo '<th>Action</th>';
             echo '</tr>';
 
-			echo '<tr>';
+            echo '<tr>';
             echo '<td>';
 
             $sql = 'SELECT * FROM moteurs';
             $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
 
-			while($data = mysqli_fetch_assoc($req))
-			{
+            while($data = mysqli_fetch_assoc($req))
+            {
                 echo '<div class="checkbox">';
                 echo '<label><input type="checkbox" value="'.$data['osAutorise'].'" name="'.$data['id_os'].'">'.$data['id_os'].'</label>';
                 echo '</div>';
@@ -109,49 +107,49 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
             echo '</tr>';
             echo '</table>';
             echo '</form>';
-		}
+        }
 
-		if ($_POST['cmd'] == 'Change')
-		{
-		    if ($_POST['NewPass1'] == $_POST['NewPass2'])
-		    {	
-		        $encryptedPassword = sha1($_POST['NewPass1']);
-		        $sqlUp = "
+        if ($_POST['cmd'] == 'Change')
+        {
+            if ($_POST['NewPass1'] == $_POST['NewPass2'])
+            {	
+                $encryptedPassword = sha1($_POST['NewPass1']);
+                $sqlUp = "
                     UPDATE users 
                     SET `password` = '".$encryptedPassword."' 
                     WHERE `firstname` = '".$_POST['oldFirstName']."' 
                     AND `lastname` = '".$_POST['oldLastName']."'
                 ";	
-		        $reqUp = mysqli_query($db, $sqlUp) or die('Erreur SQL !<p>'.$sqlUp.'</p>'.mysqli_error($db));
+                $reqUp = mysqli_query($db, $sqlUp) or die('Erreur SQL !<p>'.$sqlUp.'</p>'.mysqli_error($db));
 
                 echo "<p class='alert alert-success alert-anim'>";
                 echo "<i class='glyphicon glyphicon-ok'></i>";
-		        echo "Mot de passe modifie avec succes ...</p>";
-		    }
+                echo "Mot de passe modifie avec succes ...</p>";
+            }
 
-			else
-			{
+            else
+            {
                 echo "<p class='alert alert-success alert-anim'>";
                 echo "<i class='glyphicon glyphicon-ok'></i>";
-			    echo "Mot de passe <b>NON</b> modifie, veuillez recommencer!</p>";
-			}
-		}
+                echo "Mot de passe <b>NON</b> modifie, veuillez recommencer!</p>";
+            }
+        }
 
-		if ($_POST['cmd'] == 'Enregistrer')
-		{
-			$sql = 'SELECT * FROM moteurs';
-			$req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
+        if ($_POST['cmd'] == 'Enregistrer')
+        {
+            $sql = 'SELECT * FROM moteurs';
+            $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
 
-			while($data = mysqli_fetch_assoc($req))
-			{
-			    if (!empty($_POST[$data['id_os']]))
-				{
-				    $clesprivilege = $clesprivilege.$_POST[$data['id_os']]."|";
-				}
-			}
+            while($data = mysqli_fetch_assoc($req))
+            {
+                if (!empty($_POST[$data['id_os']]))
+                {
+                    $clesprivilege = $clesprivilege.$_POST[$data['id_os']]."|";
+                }
+            }
 
-			$encryptedPassword = sha1($_POST['username_pass']);
-			$sqlIns = "
+            $encryptedPassword = sha1($_POST['username_pass']);
+            $sqlIns = "
                 INSERT INTO users (`firstname` ,`lastname` ,`password` ,`privilege`, `osAutorise`)
                 VALUES (
                     '".$_POST['NewFirstName']."', 
@@ -161,16 +159,16 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
                     '".$clesprivilege."'
                 )
             ";
-			$reqIns = mysqli_query($db, $sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysqli_error($db));
+            $reqIns = mysqli_query($db, $sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysqli_error($db));
 
-			echo "<p class='alert alert-success alert-anim'>";
+            echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Utilisateur <strong>".$_POST['NewFirstName']." ".$_POST['NewLastName']."</strong> enregistre avec succès</p>";
             echo '<a class="btn btn-default" href="index.php?a=15"><i class="glyphicon glyphicon-chevron-left"></i> Retour</a>';
-		}
+        }
 
-		if ($_POST['cmd'] == 'Modifier')
-		{
+        if ($_POST['cmd'] == 'Modifier')
+        {
             $sql = 'SELECT * FROM moteurs';
             $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
                 
@@ -354,7 +352,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
         }
         echo '</table>';
     }
-	mysqli_close($db);
+    mysqli_close($db);
 }
 else {header('Location: index.php');}
 ?>

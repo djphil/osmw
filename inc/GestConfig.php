@@ -9,14 +9,12 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
 
-	$btnN1 = "disabled";
-    $btnN2 = "disabled";
-    $btnN3 = "disabled";
-	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
-	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
-	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
-	if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1
-    // if ($moteursOK == true) {if( $_SESSION['privilege'] == 1){$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
+    $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1
+    // if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
     if (isset($_POST['cmd']))
     {
@@ -32,7 +30,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
                 WHERE `config`.`id` = 1
             ";
             $reqIns = mysqli_query($db, $sqlIns) or die('Erreur SQL !<p>'.$sqlIns.'</p>'.mysql_error($db));
-			echo "<p class='alert alert-success alert-anim'>";
+            echo "<p class='alert alert-success alert-anim'>";
             echo "<i class='glyphicon glyphicon-ok'></i>";
             echo " Configuration sauvée avec succes</p>";
         }

@@ -7,20 +7,17 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
     echo '<h1>Gestion Remote Admin</h1>';
     echo '<div class="clearfix"></div>';
-    
+
     echo '<p>Simulateur selectionne ';
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
 
-	// ******************************************************
-	$btnN1 = "disabled";
-	$btnN2 = "disabled";
-	$btnN3 = "disabled";
-	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 4	
-	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 3
-	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}			  // Niv 2
-	if ($_SESSION['privilege'] == 1) {$btnN1 = "";}					          // Niv 1
-	// ******************************************************	
+    $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                             // Niv 1
+    // if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
     $channel="d8e93046-dcfc-4a65-81ab-25554eee893f";
 
