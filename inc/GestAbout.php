@@ -13,10 +13,16 @@ if (isset($_SESSION['authentification']))
     echo '<div class="panel-body">';
     echo '<div class="pull-right">';
     include_once("inc/paypal.php");
+    
+    echo '<div class="text-center margin-top ">';
+    echo '<a class="btn btn-default" href="'.$github_url.'" target="_blank">';
+    echo '<i class="glyphicon glyphicon-save"></i> Download Source Code</a>';
+    echo '</div>';
+
     echo '</div>';
     echo "<p>L'objectif de ce projet est de gérer des <strong>Simulateurs OpenSim</strong> sous <strong>Windows</strong>.</p>";
+    echo '<p>Ce projet a été entièrement refactorisé en 2015 et maintenu à jour en '.date("Y").' par djphil.</p>';
 
-    echo 'Projet entièrement refactorisé en 2015 et maintenu à jour en '.date("Y").' par djphil.<br />';
     echo "Merci a tous les contributeurs et utilisateurs pour ce produit Open Source.<br />";
     echo '<span class="small">(Projet initialement développé en 2010 par Nino85 Whitman).</span>';
     echo '</div>';
