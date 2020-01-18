@@ -11,26 +11,26 @@ if (isset($_SESSION['authentification']))
     echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
     echo '</p>';
 
-	if ($_SESSION['osAutorise'] != '')
-	{
+    if ($_SESSION['osAutorise'] != '')
+    {
         $osAutorise = explode(";", $_SESSION['osAutorise']);
         // echo count($osAutorise);
         // echo $_SESSION['osAutorise'];
         for($i = 0; $i < count($osAutorise); $i++)
-		{
+        {
             if(INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i])
             {
                 $moteursOK = "OK";
             }
         }
     }
-	else {$moteursOK = "NOK";}
+    else {$moteursOK = "NOK";}
 
-	$btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
-	if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
-	if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
-	if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
-	// if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
+    $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
     if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
     /* CONSTRUCTION de la commande pour ENVOI sur la console via  SSH */
@@ -39,22 +39,22 @@ if (isset($_SESSION['authentification']))
         $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address").$FichierINIOpensim;			 
         if (file_exists($filename2)) {$filename = $filename2;}
         else {;}
-	
+
         if (!$fp = fopen($filename,"r")) 
         {
             echo "Echec de l'ouverture du fichier ".$filename;
         }
-        
-		$tabfich = file($filename); 
+
+        $tabfich = file($filename); 
         $n = count($tabfich);
 
         for( $i = 1; $i < $n; $i++)
-		{
+        {
             if (strpos($tabfich[$i], ";") === false)
             {
                 $porthttp = strstr($tabfich[$i], "port");
                 $access_password = strstr($tabfich[$i], "access_password");
-                
+
                 if (!empty($porthttp))
                 {
                     $posEgal = strpos($porthttp, '=');
@@ -71,9 +71,9 @@ if (isset($_SESSION['authentification']))
                     // $Remote_access_password = substr($access_password2, 1,$longueur2-2 );			
                 }
             }
-		}
-		fclose($fp);
-        
+        }
+        fclose($fp);
+
         // $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($Remote_access_password));
         $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($access_password2));
 
@@ -91,6 +91,7 @@ if (isset($_SESSION['authentification']))
             );
             $myRemoteAdmin->SendCommand('admin_save_oar', $parameters);
         }
+
         echo '<div class="alert alert-success alert-anim">';
         echo '<i class="glyphicon glyphicon-ok"></i>';
         echo ' Fichier en cours de creation, veuillez consulter le <strong>Log</strong> ...';
@@ -114,7 +115,7 @@ if (isset($_SESSION['authentification']))
         if ($data['id_os'] == $_SESSION['opensim_select']) {$sel = "selected";}
         echo '<option value="'.$data['id_os'].'" '.$sel.'>'.$data['name'].' '.$data['version'].'</option>';
     }
-    
+
     echo'</select>';
     echo' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
     echo '</div>';
@@ -132,15 +133,15 @@ if (isset($_SESSION['authentification']))
     if (file_exists($filename2)) {$filename = $filename2 ;}
     else {;}
 
-	if (!$fp = fopen($filename, "r")) 
-	{
+    if (!$fp = fopen($filename, "r")) 
+    {
         echo "<p class='alert alert-danger'>Echec de l'ouverture du fichier .ini <strong>$filename</strong></p>";
     }
 
     $tabfich = file($filename); 
     $n = count($tabfich);
     $srvOS = 9000;
-	
+
     for( $i = 1; $i < $n; $i++)
     {
         if (strpos($tabfich[$i], ";") === false)
@@ -171,34 +172,34 @@ if (isset($_SESSION['authentification']))
     echo '</tr>';
 
     foreach($tableauIni as $key => $value)
-	{
+    {
         $uuid = str_replace("-", "", $tableauIni[$key]['RegionUUID']);
-		$ImgMap = "http://".$hostnameSSH.":".trim($srvOS)."/index.php?method=regionImage".$uuid;
+        $ImgMap = "http://".$hostnameSSH.":".trim($srvOS)."/index.php?method=regionImage".$uuid;
         if (Test_Url($ImgMap) == false) {$ImgMap = "img/offline.jpg";}
 
         echo '<tr>';
         echo '<td><h5>'.$key.'</h5></td>';
-		echo '<td><img  style="height: 38px;" class="img-thumbnail" alt="" src="'.$ImgMap.'"></td>';
+        echo '<td><img  style="height: 38px;" class="img-thumbnail" alt="" src="'.$ImgMap.'"></td>';
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['RegionUUID'].'</span></h5></td>';
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['Location'].'</span></h5></td>';
         echo '<td><h5>'.$tableauIni[$key]['ExternalHostName'].'</h5></td>';
         echo "<td><h5><span class='badge'>".$tableauIni[$key]['InternalAddress']."</span></h5></td>";
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['InternalPort'].'</span></h5></td>';
 
-		echo '<td>';
-		echo '<form method="post" action="">';
+        echo '<td>';
+        echo '<form method="post" action="">';
         echo '<input type="hidden" name="backup_sim" value="1" >';
-		echo '<input type="hidden" name="format_backup" value="OAR" >';
-		echo '<input type="hidden" name="name_sim" value="'.$key.'">';
-		echo '<button type="submit" name="cmd" class="btn btn-success" value="Save OAR" '.$btnN2.'>';
+        echo '<input type="hidden" name="format_backup" value="OAR" >';
+        echo '<input type="hidden" name="name_sim" value="'.$key.'">';
+        echo '<button type="submit" name="cmd" class="btn btn-success" value="Save OAR" '.$btnN2.'>';
         echo '<i class="glyphicon glyphicon-save"></i> Save OAR';
         echo '</button>';
-         
-		echo '</form>';
-		echo '</td>';
-		echo '</tr>';
-	}
-	echo '</table>';	
+
+        echo '</form>';
+        echo '</td>';
+        echo '</tr>';
+    }
+    echo '</table>';	
 }
 else {header('Location: index.php');}
 ?>
