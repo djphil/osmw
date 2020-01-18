@@ -16,16 +16,18 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `gestionnaire`
+-- Table structure for table `osnpc_terminals`
 --
 
-DROP TABLE IF EXISTS `gestionnaire`;
+DROP TABLE IF EXISTS `osnpc_terminals`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `gestionnaire` (
+CREATE TABLE `osnpc_terminals` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `uuid` varchar(50) NOT NULL DEFAULT '0',
-  `region` varchar(50) NOT NULL DEFAULT '0',
+  `uuid` varchar(36) NOT NULL DEFAULT '0',
+  `region` varchar(64) NOT NULL DEFAULT '0',
+  `server_url` varchar(256) NOT NULL,
+  `server_uuid` varchar(36) NOT NULL  
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -63,6 +65,5 @@ CREATE TABLE `npc` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
 
 -- Dump completed on 2015-09-11  8:30:14
