@@ -1,10 +1,5 @@
 <?php 
-function construire_url($dossier) 
-{
-    return 'css/' . htmlspecialchars($dossier) . '/' .htmlspecialchars($dossier). '.css'; 
-}
-
-$dossiers = array (
+$dossiers = [
     'default',
     'amelia',
     'cerulean',
@@ -24,7 +19,9 @@ $dossiers = array (
     'superhero',
     'united',
     'yety'
-);
+];
+
+function build_url($folder) {return 'css/' . htmlspecialchars($folder) . '/' .htmlspecialchars($folder). '.css';}
 
 $new_style = (isset($_GET['style'])) ? $_GET['style'] : ''; 
 $cookie_style = (isset($_COOKIE['style'])) ? $_COOKIE['style'] : '';  
@@ -32,12 +29,9 @@ $cookie_style = (isset($_COOKIE['style'])) ? $_COOKIE['style'] : '';
 if (in_array($new_style, $dossiers, true)) 
 {
     setcookie('style', $new_style, time() + (365 * 24 * 3600), '/');
-    $url = construire_url($new_style); 
+    $url = build_url($new_style); 
 }
 
-else if (in_array($cookie_style, $dossiers, true))
-{
-    $url = construire_url($cookie_style);
-}
-else {$url = construire_url($dossiers[0]);} 
-?> 
+else if (in_array($cookie_style, $dossiers, true)) {$url = build_url($cookie_style);}
+else {$url = build_url($dossiers[0]);} 
+?>
