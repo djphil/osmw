@@ -48,6 +48,13 @@
         </div>
 
         <div class="form-group">
+        <label for="base" class="col-sm-4 control-label">dns name</label>
+            <div class="col-sm-4">
+                <input class="form-control" type="text" name="dns" maxlength="40" placeholder="domaine.com" />
+            </div>
+        </div>
+
+        <div class="form-group">
             <div class="col-sm-offset-4 col-sm-4">
                 <button class="btn btn-success btn-block" type="submit" name="submit" value="Installer">Installer</button>
             </div>
@@ -76,11 +83,13 @@
             goto end;
         }
 
-        $hote   = trim($_POST['hote']);
-        $login  = trim($_POST['login']);
-        $pass   = trim($_POST['mdp']);
-        $base   = trim($_POST['base']);
-        $con    = mysqli_connect($hote, $login, $pass, $base);
+        $hote = trim($_POST['hote']);
+        $login = trim($_POST['login']);
+        $pass = trim($_POST['mdp']);
+        $base = trim($_POST['base']);
+        $dns = trim($_POST['dns']);
+
+        $con = mysqli_connect($hote, $login, $pass, $base);
         if (mysqli_connect_errno()) {echo "Failed to connect to MySQL: ".mysqli_connect_error();}
 
         if (!$con)
@@ -107,7 +116,7 @@ $hostnameBDD = "'.$hote.'";
 $userBDD = "'.$login.'";
 $passBDD = "'.$pass.'";
 $database = "'.$base.'";
-$hostnameSSH = "domaine.com";
+$hostnameSSH = "'.$dns.'";
 
 /* Noms des fichiers INI  */
 $FichierINIOpensim = "OpenSim.ini";
@@ -179,7 +188,28 @@ $lang      = "fr";
         {
             if (!mysql_query($req) AND trim($req) != '')
             {
-                exit('ERREUR : '.$req);
+                exit('ERROR: '.$req);
+            }
+        }
+
+        $requetes = '';
+        $sql = file('docs/sql/database_NPC.sql');
+
+        foreach($sql as $lecture)
+        {
+            if (substr(trim($lecture), 0, 2) != '--')
+            {
+                $requetes .= $lecture;
+            }
+        }
+
+        $reqs = split(';', $requetes);
+
+        foreach($reqs as $req)
+        {
+            if (!mysql_query($req) AND trim($req) != '')
+            {
+                exit('ERROR : '.$req);
             }
         }
 
