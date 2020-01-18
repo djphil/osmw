@@ -13,42 +13,42 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
 </head>
 <body>
-<div class="container">
+<div class="container text-center">
     <h1>OpenSimulator Manager Web v6.0</h1>
     <?php if (!isset($_POST['etape'])): ?>
     <form class="form-horizontal" action="" method="post">
         <input type="hidden" name="etape" value="1" />
 
         <div class="form-group">
-        <label for="hote" class="col-sm-2 control-label">db host</label>
+        <label for="hote" class="col-sm-4 control-label">db host</label>
             <div class="col-sm-4">
                 <input class="form-control" type="text" name="hote" maxlength="40" placeholder="localhost" />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="login" class="col-sm-2 control-label">db user</label>
+        <label for="login" class="col-sm-4 control-label">db user</label>
             <div class="col-sm-4">
                 <input class="form-control" type="text" name="login" maxlength="40" placeholder="root" />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="mdp" class="col-sm-2 control-label">db pass</label>
+        <label for="mdp" class="col-sm-4 control-label">db pass</label>
             <div class="col-sm-4">
                 <input class="form-control" type="password" name="mdp" maxlength="40" placeholder="password" />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="base" class="col-sm-2 control-label">db name</label>
+        <label for="base" class="col-sm-4 control-label">db name</label>
             <div class="col-sm-4">
                 <input class="form-control" type="text" name="base" maxlength="40" placeholder="osmw" />
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-sm-offset-2 col-sm-4">
+            <div class="col-sm-offset-4 col-sm-4">
                 <button class="btn btn-success btn-block" type="submit" name="submit" value="Installer">Installer</button>
             </div>
         </div>
