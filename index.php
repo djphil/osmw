@@ -5,6 +5,7 @@ ini_set('magic_quotes_gpc', 0);
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
+include_once('inc/configcheck.php'); 
 include_once('inc/config.php');
 include_once('inc/mysqli.php');
 include_once('inc/fonctions.php');
