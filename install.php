@@ -62,7 +62,8 @@
     </form>
     <?php endif ?>
 
-    <?php if (isset($_POST['delete']))
+    <?php
+    if (isset($_POST['delete']))
     {
         unlink('install.php');
         header('Location: ./');
@@ -123,7 +124,28 @@ $FichierINIOpensim = "OpenSim.ini";
 $FichierINIRegions = "Regions.ini";
 
 /* Themes */
-$themes = true;
+$theme = true;
+$themes = [
+    "default",
+    "amelia",
+    "cerulean",
+    "cosmo",
+    "cyborg",
+    "darkly",
+    "flatly",
+    "freelancer",
+    "journal",
+    "lumen",
+    "paper",
+    "readable",
+    "sandstone",
+    "simplex",
+    "slate",
+    "spacelab",
+    "superhero",
+    "united",
+    "yety"
+];
 
 /* Languages */
 $translator = true;

@@ -10,6 +10,11 @@ function str_random($length)
     return substr(str_shuffle(str_repeat($alphabet, $length)), 0, $length);
 }
 
+function build_url($folder)
+{
+    return 'css/' . htmlspecialchars($folder) . '/' .htmlspecialchars($folder). '.css';
+}
+
 /* For NPC's */
 function LectureFichier($file)
 {

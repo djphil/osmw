@@ -10,7 +10,7 @@ include_once('inc/config.php');
 include_once('inc/mysqli.php');
 include_once('inc/fonctions.php');
 include_once('inc/radmin.php');
-if ($themes) {include_once ('inc/themes.php');}
+if ($theme) {include_once ('inc/themes.php');}
 
 $a = !empty($_GET['a']) ? $_GET['a'] : 1;
 if ($a == 'logout')
@@ -137,7 +137,7 @@ if (isset($_SESSION['privilege']))
 
 <!--Themes -->
 <div class="options">
-<?php if ($themes && isset($_SESSION['authentification'])): ?>
+<?php if ($theme && isset($_SESSION['authentification'])): ?>
 <?php if (isset($_GET['style']) && !empty($_GET['style'])) {$theme = $_GET['style'];} else $theme = "Themes"; ?>
 <div class="btn-group">
     <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
