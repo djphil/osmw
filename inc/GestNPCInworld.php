@@ -20,7 +20,7 @@ if (isset($_POST['server_url']) AND isset($_POST['server_uuid']) AND isset($_POS
 
 if (isset($_POST['parameter']))
 {
-    $parameter = mysqli_real_escape_string($db, $_POST["parameter"]);
+    $parameter = mysqli_real_escape_string($db, $_POST['parameter']);
 
     // ENREGISTREMENT DU GESTIONNAIRE DE NPC
 	if ($parameter == "REG_WEB_NPC" )
@@ -80,8 +80,8 @@ if (isset($_POST['parameter']))
         $lastname = mysqli_real_escape_string($db, $_POST['lastname']);
         $full = $firstname + " " + $lastname;
         $sql = "
-            INSERT INTO `npc` (`uuid_npc`, `firstname`, `lastname`, `region`) 
-            VALUES ('".$uuid."', '".$firstname."', '".$lastname."', '".$region."');
+        INSERT INTO `npc` (`uuid_npc`, `firstname`, `lastname`, `region`) 
+        VALUES ('".$uuid."', '".$firstname."', '".$lastname."', '".$region."');
         ";
         $req = mysqli_query($db, $sql) or die('Erreur SQL !<br />'.$sql.'<br />'.mysqli_error($db));
         echo 'Info_NPC, Votre NPC '.$full.' est enregistré et opérationnel, Bonne Utilisation ...';
@@ -104,12 +104,12 @@ if (isset($_POST['parameter']))
 
         while ($data0 = mysqli_fetch_assoc($req0)) 
         {
-            $listeNPC = $listeNPC.$data0["uuid_npc"]." -> ".$data0["firstname"]." ".$data0["lastname"].";";  
+            $listeNPC = $listeNPC.$data0['uuid_npc']." -> ".$data0['firstname']." ".$data0['lastname'].";";  
         }
         echo 'Info_NPC, Liste NPC, '.$numrow0.' NPCs, '.$listeNPC.',';
     }
 
-    // ENREGISTREMENT DES OBJETS / APPARENCE / ANIMATION
+        // ENREGISTREMENT DES OBJETS / APPARENCE / ANIMATION
     if ($parameter == "LISTE_OBJ")
     {
         $uuid = mysqli_real_escape_string($db, $_POST['uuid']);
@@ -133,7 +133,7 @@ if (isset($_POST['parameter']))
                 {
                     $sql = "
                         INSERT INTO `inventaire` (`uuid_parent`, `type`, `nom`, `region`) 
-                        VALUES ('".$_POST["uuid"]."', 'apparence', '".$listinventaire[$i+$j+1]."', '".$_POST["region"]."');
+                        VALUES ('".$_POST['uuid']."', 'apparence', '".$listinventaire[$i+$j+1]."', '".$_POST['region']."');
                     ";
                     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br />'.$sql.'<br />'.mysqli_error($db));
                 }
@@ -145,25 +145,24 @@ if (isset($_POST['parameter']))
                 {
                     $sql = "
                         INSERT INTO `inventaire` (`uuid_parent`, `type`, `nom`, `region`) 
-                        VALUES ('".$_POST["uuid"]."', 'animation', '".$listinventaire[$i+$j+1]."', '".$_POST["region"]."');
+                        VALUES ('".$_POST['uuid']."', 'animation', '".$listinventaire[$i+$j+1]."', '".$_POST['region']."');
                     ";
                     $req = mysqli_query($db, $sql) or die('Erreur SQL !<br />'.$sql.'<br />'.mysqli_error($db));
                 }
             }
         }
-        echo 'Info_NPC,Inventaire,UUID Objet: '.$_POST["uuid"].',Inventaire Enregistré;,';
+        echo 'Info_NPC, Inventaire, UUID Objet: '.$_POST['uuid'].', Inventaire Enregistré;,';
     }
 
     // APPEL INWORLD + LECTURE ORDRE + EFFACEMENT DU DERNIER ORDRE
-	if ($parameter == "TIMER")
-	{
+    if ($parameter == "TIMER")
+    {
         // $uuid = mysqli_real_escape_string($db, $_POST['uuid']);
         $region = mysqli_real_escape_string($db, $_POST['region']);
-
         $FILE_NPC_TIMER = $region.".txt";
 
-		if (file_exists($FILE_NPC_TIMER))
-		{
+        if (file_exists($FILE_NPC_TIMER))
+        {
             $monfichier = fopen($FILE_NPC_TIMER, 'r+');
             $ligne = fgets($monfichier);
             fclose($monfichier);
@@ -172,8 +171,8 @@ if (isset($_POST['parameter']))
             fputs($monfichier, ""); // On écrit le nouveau nombre de pages vues
             fclose($monfichier);
             echo $ligne;
-		}
-	}
+        }
+    }
 }
 mysqli_close($db);
 ?>
