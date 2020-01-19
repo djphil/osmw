@@ -82,7 +82,8 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 
         if (isset($_POST['STAND']))
         {
-            EcritureFichier($FILE_NPC, "Gestion_NPC,STAND,".$_POST['select_sit'].",section3,section4,".$_POST['regionUUID']);
+            $select_sit = isset($_POST['select_sit']) ? $_POST['select_sit'] : '';
+            EcritureFichier($FILE_NPC, "Gestion_NPC,STAND,".$select_sit.",section3,section4,".$_POST['regionUUID']);
         }
 
         if (isset($_POST['ANIMATE']))
