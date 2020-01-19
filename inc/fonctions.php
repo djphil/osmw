@@ -513,8 +513,8 @@ function cmp_ext($a, $b)
 function Rec($text)
 {
     $text = trim($text);
-    if (1 === get_magic_quotes_gpc()) {$stripslashes = create_function('$txt', 'return stripslashes($txt);');}
-    else {$stripslashes = create_function('$txt', 'return $txt;');}
+    if (get_magic_quotes_gpc() === 1) {$stripslashes = function($txt) {return stripslashes($txt);};}
+    else {$stripslashes = function($txt) {return $txt;};}
     $text = $stripslashes($text);
     $text = htmlspecialchars($text, ENT_QUOTES);
     $text = nl2br($text);
