@@ -27,7 +27,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<h1>Gestion NPC</h1>';
     echo '<div class="clearfix"></div>';
 
-    $select_npc = !empty($_POST["select_npc"]) ? $_POST["select_npc"] : NULL_KEY;
+    $select_npc = !empty($_POST['select_npc']) ? $_POST['select_npc'] : NULL_KEY;
     $sqlA = "SELECT * FROM `osnpc_terminals` WHERE uuid='".$regionUUID."'" ;
     $reqA = mysqli_query($db, $sqlA) or die('Erreur SQL !<br />'.$sqlA.'<br />'.mysqli_error($db));
     $dataA = mysqli_fetch_assoc($reqA);
@@ -36,87 +36,89 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     $regionName = $dataA['region'];
     $FILE_NPC = $regionName.".txt";	
 
-    if (isset($_POST["parameter"]) && $_POST["parameter"] == "WEB")
+    if (isset($_POST['parameter']) && $_POST['parameter'] == "WEB")
     {
         echo '<div class="alert alert-success alert-anim" role="alert">';
         echo "Commande envoyée, merci de patienter avant d'envoyer une nouvelle commande ...";
         echo '</div>';
 
-        if (isset($_POST["eclat"]))	
+        if (isset($_POST['eclat']))	
         {
-            if ($_POST["eclat"] == 'eclat1') {EcritureFichier($FILE_NPC, "Gestion_NPC, REZ1, section2, section3, section4, ".$_POST['regionUUID']);}
-            if ($_POST["eclat"] == 'eclat2') {EcritureFichier($FILE_NPC, "Gestion_NPC, REZ2, section2, section3, section4, ".$_POST['regionUUID']);}
-            if ($_POST["eclat"] == 'eclat3') {EcritureFichier($FILE_NPC, "Gestion_NPC, REZ3, section2, section3, section4, ".$_POST['regionUUID']);}
+            if ($_POST['eclat'] == 'eclat1') {EcritureFichier($FILE_NPC, "Gestion_NPC, REZ1, section2, section3, section4, ".$_POST['regionUUID']);}
+            if ($_POST['eclat'] == 'eclat2') {EcritureFichier($FILE_NPC, "Gestion_NPC, REZ2, section2, section3, section4, ".$_POST['regionUUID']);}
+            if ($_POST['eclat'] == 'eclat3') {EcritureFichier($FILE_NPC, "Gestion_NPC, REZ3, section2, section3, section4, ".$_POST['regionUUID']);}
         }
 
-        if (isset($_POST["CREATE_NPC"]))
+        if (isset($_POST['CREATE_NPC']))
         {
-            EcritureFichier($FILE_NPC, "Gestion_NPC,CREATE, ".$_POST["select_apparence"].", ".$_POST["firstname_NPC"].";".$_POST["lastname_NPC"].", ".$_POST["coordX"].";".$_POST["coordY"].";".$_POST["coordZ"].", ".$_POST["regionUUID"]);
+            $select_apparence = isset($_POST['select_apparence']) ? $_POST['select_apparence'] : '';
+            EcritureFichier($FILE_NPC, "Gestion_NPC, CREATE, ".$select_apparence.", ".$_POST['firstname_NPC'].";".$_POST['lastname_NPC'].", ".$_POST['coordX'].";".$_POST['coordY'].";".$_POST['coordZ'].", ".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["STOP_NPC"]))
+        if (isset($_POST['STOP_NPC']))
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC, STOP_ALL, section2, section3, section4, ".$_POST["regionUUID"]);
-            $sql ="DELETE FROM `npc` WHERE region='".$_POST["regionName"]."'";
-            $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysqli_error($db));
+            EcritureFichier($FILE_NPC, "Gestion_NPC, STOP_ALL, section2, section3, section4, ".$_POST['regionUUID']);
+            $sql ="DELETE FROM `npc` WHERE region='".$_POST['regionName']."'";
+            $req = mysqli_query($db, $sql) or die('Erreur SQL !<br />'.$sql.'<br />'.mysqli_error($db));
         }
 
-        if (isset($_POST["REMOVE_NPC"]))
+        if (isset($_POST['REMOVE_NPC']))
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,REMOVE_NPC,".$select_npc.",section3,section4,".$_POST["regionUUID"]);
+            EcritureFichier($FILE_NPC, "Gestion_NPC,REMOVE_NPC,".$select_npc.",section3,section4,".$_POST['regionUUID']);
             $sql ="DELETE FROM `npc` WHERE uuid_npc='".$select_npc."'";
             $req = mysqli_query($db, $sql) or die('Erreur SQL !<br>'.$sql.'<br>'.mysql_error($db));
         }		
 
-        if (isset($_POST["SAY"]))
+        if (isset($_POST['SAY']))
         {
-            $message = str_replace(" ", "_", $_POST["message"]);
-            EcritureFichier($FILE_NPC,"Gestion_NPC,SAY,".$select_npc.",".$message.",section4,".$_POST["regionUUID"]);
+            $message = str_replace(" ", "_", $_POST['message']);
+            EcritureFichier($FILE_NPC, "Gestion_NPC,SAY,".$select_npc.",".$message.",section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["SIT"]))
+        if (isset($_POST['SIT']))
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,SIT,".$select_npc.",".$_POST["uuid_objet"].",section4,".$_POST["regionUUID"]);
+            EcritureFichier($FILE_NPC,"Gestion_NPC,SIT,".$select_npc.",".$_POST['uuid_objet'].",section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["STAND"]))
+        if (isset($_POST['STAND']))
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,STAND,".$_POST["select_sit"].",section3,section4,".$_POST["regionUUID"]);
+            EcritureFichier($FILE_NPC, "Gestion_NPC,STAND,".$_POST['select_sit'].",section3,section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["ANIMATE"]))
+        if (isset($_POST['ANIMATE']))
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,".$_POST["ANIMATE"].",".$select_npc.",".$_POST["select_animation"].",section4,".$_POST["regionUUID"]);
+            EcritureFichier($FILE_NPC, "Gestion_NPC,".$_POST['ANIMATE'].",".$select_npc.",".$_POST['select_animation'].",section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["APPARENCE"]) && $_POST["APPARENCE"] == "APPARENCE_LOAD")
+        if (isset($_POST['APPARENCE']) && $_POST['APPARENCE'] == "APPARENCE_LOAD")
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,".$_POST["APPARENCE"].",".$select_npc.",".$_POST["select_apparence"].",section4,".$_POST["regionUUID"]);
+            $select_apparence = isset($_POST['select_apparence']) ? $_POST['select_apparence'] : '';
+            EcritureFichier($FILE_NPC, "Gestion_NPC,".$_POST['APPARENCE'].",".$select_npc.",".$select_apparence.",section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["APPARENCE"]) && $_POST["APPARENCE"] == "APPARENCE_SAVE")
+        if (isset($_POST['APPARENCE']) && $_POST['APPARENCE'] == "APPARENCE_SAVE")
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,".$_POST["APPARENCE"].",".$select_npc.",".$_POST["notecard_apparence"].",section4,".$_POST["regionUUID"]);
+            EcritureFichier($FILE_NPC, "Gestion_NPC,".$_POST['APPARENCE'].",".$select_npc.",".$_POST['notecard_apparence'].",section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["MAJ_LISTE"]))
+        if (isset($_POST['MAJ_LISTE']))
         {
-            EcritureFichier($FILE_NPC,"Gestion_NPC,LISTING,section2,section3,section4,".$_POST["regionUUID"]);
+            EcritureFichier($FILE_NPC, "Gestion_NPC,LISTING,section2,section3,section4,".$_POST['regionUUID']);
         }
 
-        if (isset($_POST["RAZ_LISTE_OBJ"]))
+        if (isset($_POST['RAZ_LISTE_OBJ']))
         {
-            $sql0 = "DELETE FROM `npc` WHERE region='".$_POST["regionName"]."'" ;
+            $sql0 = "DELETE FROM `npc` WHERE region='".$_POST['regionName']."'" ;
             $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
-            $sql0 = "DELETE FROM `inventaire` WHERE region='".$_POST["regionName"]."'" ;
+            $sql0 = "DELETE FROM `inventaire` WHERE region='".$_POST['regionName']."'" ;
             $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
-            $sql0 = "DELETE FROM `osnpc_terminals` WHERE region='".$_POST["regionName"]."'" ;
+            $sql0 = "DELETE FROM `osnpc_terminals` WHERE region='".$_POST['regionName']."'" ;
             $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
         }
     }
 
-    // Si le region NPC selectionne a change
-    if (isset($_POST["region"])){$_SESSION['uuid_region_npc'] = trim($_POST["region"]);}
+    // Si la région NPC selectionné à changée
+    if (isset($_POST['region'])) {$_SESSION['uuid_region_npc'] = trim($_POST['region']);}
 
     $sql0 = "SELECT * FROM `osnpc_terminals`" ;
     $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
@@ -135,7 +137,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<select class="form-control" name="region">';
     while($data = mysqli_fetch_assoc($req0))
     {
-        echo '<option value="'.$data["uuid"].'">'.$data["region"].'</option> ';
+        echo '<option value="'.$data['uuid'].'">'.$data['region'].'</option> ';
     }
     echo'</select>';
     echo' <button type="submit" class="btn btn-success"><i class="glyphicon glyphicon-ok"></i> Select</button> ';
@@ -181,11 +183,11 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<label for="select_npc">Select NPC:</label> ';
     echo '<select class="form-control" name="select_npc">';
     $sql0 = "SELECT * FROM `npc` WHERE region='".$regionName."'" ;
-    $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br>'.$sql0.'<br>'.mysqli_error($db));
+    $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
 
     while ($data0 = mysqli_fetch_assoc($req0)) 
     {
-        echo '<option value="'.$data0["uuid_npc"].'">'.$data0["firstname"].' '.$data0["lastname"].'</option> ';
+        echo '<option value="'.$data0['uuid_npc'].'">'.$data0['firstname'].' '.$data0['lastname'].'</option> ';
     }
     echo'</select>';
     echo' <button type="submit" class="btn btn-danger" name="REMOVE_NPC" value="REMOVE_NPC"><i class="glyphicon glyphicon-remove-circle"></i> Supprimer NPC</button>';
@@ -196,11 +198,11 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<label for="select_apparence">Apparence:</label> ';
     echo '<select class="form-control" name="select_apparence">';
     $sql0 = "SELECT * FROM `inventaire` WHERE (type='apparence' AND uuid_parent='".$regionUUID."')" ;
-    $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br>'.$sql0.'<br>'.mysqli_error($db));
+    $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br />'.$sql0.'<br />'.mysqli_error($db));
 
     while ($data0 = mysqli_fetch_assoc($req0)) 
     {
-        echo '<option value="'.$data0["nom"].'">'.$data0["nom"].'</option> ';
+        echo '<option value="'.$data0['nom'].'">'.$data0['nom'].'</option> ';
     }
     echo'</select>';
     echo' <button type="submit" class="btn btn-success" name="APPARENCE" value="APPARENCE_LOAD"><i class="glyphicon glyphicon-ok"></i> Choisir</button>';
@@ -236,7 +238,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
 
     while ($data0 = mysqli_fetch_assoc($req0)) 
     {
-        echo '<option value="'.$data0["nom"].'">'.$data0["nom"].'</option> ';
+        echo '<option value="'.$data0['nom'].'">'.$data0['nom'].'</option> ';
     }
     echo'</select>';
     echo' <button type="submit" class="btn btn-default" name="ANIMATE" value="ANIMATE_START"><i class="glyphicon glyphicon-play"></i> Play</button>';
