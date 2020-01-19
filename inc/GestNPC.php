@@ -261,7 +261,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<div class="panel-heading">Gestion BOX</div>';
     echo '<div class="panel-body">';
     echo '<p>Inworld script: ';
-    echo '<a class="btn btn-default" href="docs/lsl/Osmw Npc Terminal v0.1.lsl" target=_blank>Osmw Npc Terminal v0.1.lsl</a>';
+    echo '<a class="btn btn-default" href="docs/lsl/OSMW_Npc_Terminal_v0.1.lsl" target=_blank>OSMW_Npc_Terminal_v0.1.lsl</a>';
     echo '</p>';
     echo '<p>Actions: ';
     echo '<button type="submit" class="btn btn-danger" name="MAJ_LISTE" value="MAJ_LISTE"><i class="glyphicon glyphicon-wrench"></i> Lire Box</button> ';
