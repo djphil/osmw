@@ -151,9 +151,10 @@ function NbOpensim()
 }
 
 /* */
-function exec_command($commande)
+function exec_command($cmd)
 {
-    $output = exec($commande);
+    $cmd = escapeshellcmd($cmd);
+    $output = exec($cmd);
     return $output;
 }
 
