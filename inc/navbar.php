@@ -8,7 +8,7 @@
             <span class="icon-bar"></span>
         </button>
         <a class="navbar-brand" href="index.php">
-            <i class="glyphicon glyphicon-fire"></i> <strong>OSMW</strong>
+            <i class="glyphicon glyphicon-fire"></i> <strong>OSMW <?php echo INI_Conf('VersionOSMW', 'VersionOSMW'); ?></strong>
         </a>
     </div>
 
@@ -22,7 +22,7 @@
             <li <?php if (isset($_GET['a']) && $_GET['a'] == 1) {echo 'class="active"';} ?>>
                 <a href="index.php?a=1"><i class="glyphicon glyphicon-th-large"></i> <?php echo $txt_menu_managment ; ?></a>
             </li>
-            
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="glyphicon glyphicon-hdd"></i> <?php echo $txt_menu_backups ; ?> <span class="caret"></span>
@@ -49,14 +49,17 @@
                     <i class="glyphicon glyphicon-info-sign"></i> <?php echo $txt_menu_infos ; ?> <span class="caret"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li <?php if (isset($_GET['a']) && $_GET['a'] == 7) {echo 'class="active"';} ?>>
-                        <a href="index.php?a=7"> <i class="glyphicon glyphicon-file"></i> <?php echo $txt_menu_logs ; ?></a>
-                    </li>
                     <li <?php if (isset($_GET['a']) && $_GET['a'] == 14) {echo 'class="active"';} ?>>
                         <a href="index.php?a=14"><i class="glyphicon glyphicon-info-sign"></i> <?php echo $txt_menu_about ; ?></a>
                     </li>
+                    <li <?php if (isset($_GET['a']) && $_GET['a'] == 24) {echo 'class="active"';} ?>>
+                        <a href="index.php?a=24"><i class="glyphicon glyphicon-info-sign"></i> <?php echo $txt_menu_tos ; ?></a>
+                    </li>
                     <li <?php if (isset($_GET['a']) && $_GET['a'] == 9) {echo 'class="active"';} ?>>
                         <a href="index.php?a=9"><i class="glyphicon glyphicon-envelope"></i> <?php echo $txt_menu_contact ; ?></a>
+                    </li>
+                    <li <?php if (isset($_GET['a']) && $_GET['a'] == 7) {echo 'class="active"';} ?>>
+                        <a href="index.php?a=7"> <i class="glyphicon glyphicon-file"></i> <?php echo $txt_menu_logs ; ?></a>
                     </li>
                 </ul>
             </li>

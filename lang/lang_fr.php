@@ -13,6 +13,7 @@ $txt_menu_files     = "Fichiers";
 $txt_menu_infos     = "Infos";
 $txt_menu_logs      = "Journaux";
 $txt_menu_about     = "A propos";
+$txt_menu_tos       = "Conditions";
 $txt_menu_contact   = "Contact";
 $txt_menu_login     = "Connexion";
 $txt_menu_logout    = "Déconnexion";
