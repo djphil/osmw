@@ -1,5 +1,4 @@
 <?php
-// Verification sur la session authentification 
 if (isset($_SESSION['authentification']))
 {
     if (isset($_POST['OSSelect']))
@@ -20,24 +19,20 @@ if (isset($_SESSION['authentification']))
         $osAutorise = explode(";", $_SESSION['osAutorise']);
         for($i = 0; $i < count($osAutorise); $i++)
         {
-            if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i]) {$moteursOK = "OK";}
+            if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i]) {$moteursOK = true;}
         }
     }
-    else {$moteursOK = "NOK";}
+    else {$moteursOK = false;}
 
     $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
     if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
     if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
     if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
     // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
-    if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
+    if ($moteursOK == true) {if ($_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
-    // ******************************************************
-    // CONSTRUCTION de la commande pour ENVOI sur la console via  SSH
-    // ******************************************************
     if (isset($_POST['cmd']))
     {
-        // *** Lecture Fichier OpenSimDefaults ***
         $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address").$FichierINIOpensim;			 
         if (file_exists($filename2)) {$filename = $filename2;}
         else {;}
@@ -47,13 +42,13 @@ if (isset($_SESSION['authentification']))
         $tabfich = file($filename); 
         $n = count($tabfich);
 
-        for( $i = 1; $i < $n; $i++)
+        for ($i = 1; $i < $n; $i++)
         {
             if (strpos($tabfich[$i], ";") === false)
             {
                 $porthttp = strstr($tabfich[$i], "port");
                 $access_password = strstr($tabfich[$i], "access_password");
-                
+
                 if (!empty($porthttp))
                 {
                     $posEgal = strpos($porthttp, '=');
@@ -67,7 +62,7 @@ if (isset($_SESSION['authentification']))
                     $longueur = strlen($access_password);
                     $access_password2 = trim(substr($access_password, $posEgal + 1));
                     // $longueur2 = strlen($access_password2);
-                    // $Remote_access_password = substr($access_password2, 1,$longueur2-2 );			
+                    // $Remote_access_password = substr($access_password2, 1,$longueur2 - 2);			
                 }
             }
         }
@@ -76,9 +71,6 @@ if (isset($_SESSION['authentification']))
         // $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($Remote_access_password));
         $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($access_password2));
 
-        //*********************************
-        // === Commande BACKUP ===
-        //*********************************
         if ($_POST['save_terrain'])
         {
             // echo "name_sim = ".$_POST['name_sim'];
@@ -94,12 +86,6 @@ if (isset($_SESSION['authentification']))
             echo '</div>';
         }
     }
-
-    //******************************************************
-    //  Affichage page principale
-    //******************************************************
-    $db = mysqli_connect($hostnameBDD, $userBDD, $passBDD, $database);
-    if (mysqli_connect_errno()) {echo "Failed to connect to MySQL: " . mysqli_connect_error();}
 
     $sql = 'SELECT * FROM moteurs';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
@@ -123,9 +109,7 @@ if (isset($_SESSION['authentification']))
     echo '</div>';
     echo'</form>';
     mysqli_close($db);
-    /* **************************************************** */
 
-    // *** Lecture Fichier Region.ini ***
     $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address")."Regions/".$FichierINIRegions;	 
 
     if (file_exists($filename2)) 
@@ -157,7 +141,7 @@ if (isset($_SESSION['authentification']))
     if (file_exists($filename2)) {$filename = $filename2;}
     else {;}
 
-    if (!$fp = fopen($filename,"r")) 
+    if (!$fp = fopen($filename, "r")) 
     {
         echo '<div class="alert alert-danger alert-anim">';
         echo '<i class="glyphicon glyphicon-ok"></i>';
@@ -185,10 +169,7 @@ if (isset($_SESSION['authentification']))
     }
     fclose($fp);
 
-    // $i = 0;
-
     echo '<p>Nombre total de regions <span class="badge">'.count($tableauIni).'</span>';
-
     echo '<table class="table table-hover">';
     echo '<tr>';
     echo '<th>Name</th>';
@@ -209,7 +190,7 @@ if (isset($_SESSION['authentification']))
 
         echo "<tr>";
         echo '<td><h5>'.$key.'</h5></td>';
-        echo '<td><img  style="height: 38px;" class="img-thumbnail" alt="" src="'.$ImgMap.'"></td>';
+        echo '<td><a href="index.php?a=21"><img  style="height: 38px;" class="img-thumbnail" alt="" src="'.$ImgMap.'"></a></td>';
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['RegionUUID'].'</span></h5></td>';
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['Location'].'</span></h5></td>';
         echo '<td><h5>'.$tableauIni[$key]['ExternalHostName'].'</h5></td>';
