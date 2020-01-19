@@ -4,24 +4,24 @@ echo '<h1>Formulaire de Contact</h1>';
 echo '<div class="clearfix"></div>';
 
 if (isset($_POST['OSSelect'])) {$_SESSION['opensim_select'] = trim($_POST['OSSelect']);}
-	
+
 echo '<p>Simulateur selectionné ';
 echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
 echo '</p>';
 
 if (isset($_SESSION['authentification']))
 {
-    /* CONFIGURATION */
     $form_action = 'index.php?a=9';
     $message_envoye = "<i class='glyphicon glyphicon-ok'></i> Message envoye avec succes ...";
     $message_non_envoye = "<i class='glyphicon glyphicon-remove'></i> Echec d'envoi du message, veuillez reessayer ...";
     $message_formulaire_invalide = "<i class='glyphicon glyphicon-remove'></i> Erreur dans le formulaire, veuillez reessayer ...";
     $error = false;
 
-    $nom = (isset($_POST['nom'])) ? Rec($_POST['nom']) : '';
-    $email = (isset($_POST['email'])) ? Rec($_POST['email']) : '';
-    $objet = (isset($_POST['objet'])) ? Rec($_POST['objet']) : '';
-    $message = (isset($_POST['message'])) ? Rec($_POST['message']) : '';
+    $nom = isset($_POST['nom']) ? Rec($_POST['nom']) : '';
+    $email = isset($_POST['email']) ? Rec($_POST['email']) : '';
+    $objet = isset($_POST['objet']) ? Rec($_POST['objet']) : '';
+    $message = isset($_POST['message']) ? Rec($_POST['message']) : '';
+    $sendcopy = isset($_POST['sendcopy']) ? $_POST['sendcopy'] : '';
 
     if (isset($_POST['envoi']))
     {
@@ -31,7 +31,7 @@ if (isset($_SESSION['authentification']))
         if (($nom != '') && ($email != '') && ($objet != '') && ($message != ''))
         {
             $headers = 'From: '.$nom.' <'.$email.'>' . "\r\n";
-            if ($_POST['sendcopy'] == true) {$cible = INI_Conf(0, "destinataire").', '.$email;}
+            if ($sendcopy == true) {$cible = INI_Conf(0, "destinataire").', '.$email;}
             else {$cible = INI_Conf(0, "destinataire");}
 
             $message = html_entity_decode($message);
@@ -39,7 +39,7 @@ if (isset($_SESSION['authentification']))
             $message = str_replace('&#8217;', "'", $message);
             $message = str_replace('<br>', '', $message);
             $message = str_replace('<br />', '', $message);
-            $message = $message.' > Serveur Concerne: '.$hostnameSSH.' > Simulateur Selectionne: '.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version");
+            $message = $message.' > Serveur Concerné: '.$hostnameSSH.' > Simulateur Selectionné: '.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version");
             if (mail($cible, $objet, $message, $headers)) {echo '<div class="alert alert-success alert-anim">'.$message_envoye.'</div>';}
             else {echo '<div class="alert alert-danger alert-anim">'.$message_non_envoye.'</div>';}
         }
