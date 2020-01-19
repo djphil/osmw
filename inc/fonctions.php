@@ -12,7 +12,7 @@ function str_random($length)
 
 function build_url($folder)
 {
-    return 'css/' . htmlspecialchars($folder) . '/' .htmlspecialchars($folder). '.css';
+    return 'css/'.htmlspecialchars($folder).'/'.htmlspecialchars($folder).'.css';
 }
 
 /* For NPC's */
@@ -154,8 +154,8 @@ function NbOpensim()
 function exec_command($cmd)
 {
     $cmd = escapeshellcmd($cmd);
-    $output = exec($cmd);
-    return $output;
+    $result = exec($cmd);
+    return $result;
 }
 
 /* */
@@ -389,29 +389,29 @@ function list_dir($base, $cur, $level = 0)
 }
 
 /* Extract Infos */
-function addScheme($entry,$base,$type)
+function addScheme($entry, $base,$type)
 {
-    $tab['name']    = $entry;
-    $tab['type']    = filetype($base."/".$entry);
-    $tab['date']    = filemtime($base."/".$entry);
-    $tab['size']    = filesize($base."/".$entry);
-    $tab['perms']   = fileperms($base."/".$entry);
-    $tab['access']  = fileatime($base."/".$entry);
-    $exp            = explode(".", $entry);
-    $tab['ext']     = $exp[count($exp) - 1];
+    $tab['name'] = $entry;
+    $tab['type'] = filetype($base."/".$entry);
+    $tab['date'] = filemtime($base."/".$entry);
+    $tab['size'] = filesize($base."/".$entry);
+    $tab['perms']= fileperms($base."/".$entry);
+    $tab['access'] = fileatime($base."/".$entry);
+    $exp = explode(".", $entry);
+    $tab['ext'] = $exp[count($exp) - 1];
     return $tab;
 }
 
 /* Format Size */
 function formatSize($s)
 {
-    $u = array('Octets', 'Ko', 'Mo', 'Go', 'To');
+    $u = array('o', 'Ko', 'Mo', 'Go', 'To');
     $i = 0; $m = 0;
     while($s >= 1) {$m = $s; $s /= 1024; $i++;}
     if (!$i) $i = 1;
     $d = explode(".", $m);
     if ($d[0] != $m) $m = number_format($m, 2, ",", " ");
-    return "<span class='badge'>".$m." ".$u[$i-1]."</span>";
+    return $m." ".$u[$i - 1];
 }
 
 /* Formate Type */

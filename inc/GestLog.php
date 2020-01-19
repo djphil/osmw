@@ -2,52 +2,45 @@
 if (isset($_SESSION['authentification']))
 {
     echo '<meta http-equiv="refresh" content="30"; url="#" />';
-
     echo '<p class="pull-right"><span class="label label-danger">Espace Securise Niveau '.$_SESSION['privilege'].'</span></p>';
     echo '<h1>Gestion des Fichiers Log</h1>';
     echo '<div class="clearfix"></div>';
 
     if (isset($_POST['OSSelect'])) {$_SESSION['opensim_select'] = trim($_POST['OSSelect']);}
 
-    echo '<p>Simulateur selectionne ';
-    echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
-    echo '</p>';
-
-    if($_SESSION['osAutorise'] != '')
+    if (!empty($_SESSION['osAutorise']))
     {
         $osAutorise = explode(";", $_SESSION['osAutorise']);
         for ($i = 0; $i < count($osAutorise); $i++)
         {
-            if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i])
-            {
-                $moteursOK = "OK";
-            }
+            if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i]) {$moteursOK = true;}
         }
     }
-    else {$moteursOK = "NOK";}
+    else {$moteursOK = false;}
 
     $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
-    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 4	
-    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";} // Niv 3
-    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}			  // Niv 2
-    // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}					          // Niv 1
-    if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
+    if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
+    if ($_SESSION['privilege'] == 3) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 3
+    if ($_SESSION['privilege'] == 2) {$btnN1 = ""; $btnN2 = "";}                // Niv 2
+    // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
+    if ($moteursOK == true) {if ($_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
     if (isset($_POST['cmd']))
     {
         if (isset($_POST['versionLog']))
-        { 
+        {
+            $cmd = "";
             $cheminWIN = "";
             $cheminWIN = str_replace('/','\\', INI_Conf_Moteur($_SESSION['opensim_select'], "address"));	
             if ($_POST['versionLog'] == "32") {$cmd = 'DEL '.$cheminWIN."OpenSim.log";}
             if ($_POST['versionLog'] == "64") {$cmd = 'DEL '.$cheminWIN."OpenSim.32BitLaunch.log";}
             exec_command($cmd);
-            // echo exec_command($cmd);
-            // $ecrire = fopen($cheminWIN.'OpenSim.log', "w");
-            // ftruncate($ecrire, 0);
-            // echo "DEBUG: ".$ecrire;
         }  
     }
+
+    echo '<p>Simulateur selectionne ';
+    echo '<strong class="label label-info">'.$_SESSION['opensim_select'].' '.INI_Conf_Moteur($_SESSION['opensim_select'], "version").'</strong>';
+    echo '</p>';
 
     $sql = 'SELECT * FROM moteurs';
     $req = mysqli_query($db, $sql) or die('Erreur SQL !<p>'.$sql.'</p>'.mysqli_error($db));
@@ -115,12 +108,8 @@ if (isset($_SESSION['authentification']))
 
     else $logfile = "";
 
-    $taille_fichier = filesize($fichierLog);
-
-    if ($taille_fichier >= 1073741824) {$taille_fichier = round($taille_fichier / 1073741824 * 100) / 100 . " Go";}
-    else if ($taille_fichier >= 1048576) {$taille_fichier = round($taille_fichier / 1048576 * 100) / 100 . " Mo";}
-    else if ($taille_fichier >= 1024) {$taille_fichier = round($taille_fichier / 1024 * 100) / 100 . " Ko";}
-    else {$taille_fichier = $taille_fichier . " o";}
+    $filesize = file_exists($fichierLog) ? filesize($fichierLog) : 0;
+    $human_size = formatSize($filesize);
 
     echo '<form class="form-group" method="post" action="">';
     echo '<input type="hidden" value="'.$versionlog.'" name="versionLog">';
@@ -129,13 +118,25 @@ if (isset($_SESSION['authentification']))
     echo '</form>';
 
     if ($versionlog) echo '<p class="pull-right"><span class="label label-info">System '.$versionlog.' Bits</span></p>';
-    echo '<p>Taille du Fichier Log <span class="badge">'.$taille_fichier.'</span></p>';
+    echo '<p>Taille du Fichier Log <span class="badge">'.$human_size.'</span></p>';
 
-    if ($fichierLog <> "")
+    if (file_exists($fichierLog) && $filesize > 0)
     {
+        $memory_limit = str_replace(
+            ['G', 'M', 'K'], 
+            ['000000000', '000000', '000'], 
+            ini_get('memory_limit')
+        );
+
+        if ($filesize >= $memory_limit)
+        {
+            echo '<div class="alert alert-danger">Fichier Log trop volumineux ...</div>';
+            return;
+        }
+
+        $aff = "";
         $fcontents = file($fichierLog);
         $i = sizeof($fcontents) - 25;
-        $aff = "";
 
         while (isset($fcontents[$i]) != "")
         {
@@ -151,7 +152,10 @@ if (isset($_SESSION['authentification']))
         echo '<pre>'.$aff.'</pre>';
     }
 
-    else echo '<div class="alert alert-warning">Le fichier Log est inexistant ...</div>';
+    else
+    {
+        echo '<p>Il n\'y a pas de fichier Log pour le simulateur '.$_SESSION['opensim_select'].' ...</p>';
+    }
 
     echo '</td>';
     echo '</tr>';
