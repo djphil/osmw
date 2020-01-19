@@ -27,7 +27,7 @@ CREATE TABLE `osnpc_terminals` (
   `uuid` varchar(36) NOT NULL DEFAULT '0',
   `region` varchar(64) NOT NULL DEFAULT '0',
   `server_url` varchar(256) NOT NULL,
-  `server_uuid` varchar(36) NOT NULL  
+  `server_uuid` varchar(36) NOT NULL,
   KEY `Index 1` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -65,5 +65,6 @@ CREATE TABLE `npc` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
 
 -- Dump completed on 2015-09-11  8:30:14
