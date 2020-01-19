@@ -222,10 +222,10 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<br /><br />';
     echo '<div class="btn-group " role="group" aria-label="...">';
     echo '<div class="input-group col-xs-50">';
-    echo '<input type="text" class="form-control" name="uuid_objet" placeholder="UUID de l\'objet to sit ">';
+    echo '<input type="text" class="form-control" name="uuid_objet" placeholder="UUID de l\'objet to sit">';
     echo '<span class="input-group-btn">';
-    echo '<button type="submit" class="btn btn-default" name="SIT" value="SIT" ><i class="glyphicon glyphicon-play"></i> Faire assoir le NPC</button>';
-    echo '<button type="submit" class="btn btn-default" name="STAND" value="STAND" ><i class="glyphicon glyphicon-eject"></i> Faire se lever le NPC</button>';
+    echo '<button type="submit" class="btn btn-default" name="SIT" value="SIT"><i class="glyphicon glyphicon-play"></i> Faire assoir le NPC</button>';
+    echo '<button type="submit" class="btn btn-default" name="STAND" value="STAND"><i class="glyphicon glyphicon-eject"></i> Faire se lever le NPC</button>';
     echo '</span>';
     echo '</div>';
     echo '</div>';
@@ -236,11 +236,7 @@ if (isset($_SESSION['authentification']) && $_SESSION['privilege'] >= 3)
     echo '<select class="form-control" name="select_animation">';
     $sql0 = "SELECT * FROM `inventaire` WHERE (type='animation' AND uuid_parent='".$regionUUID."')" ;
     $req0 = mysqli_query($db, $sql0) or die('Erreur SQL !<br>'.$sql0.'<br>'.mysqli_error($db));
-
-    while ($data0 = mysqli_fetch_assoc($req0)) 
-    {
-        echo '<option value="'.$data0['nom'].'">'.$data0['nom'].'</option> ';
-    }
+    while ($data0 = mysqli_fetch_assoc($req0)) {echo '<option value="'.$data0['nom'].'">'.$data0['nom'].'</option>';}
     echo'</select>';
     echo' <button type="submit" class="btn btn-default" name="ANIMATE" value="ANIMATE_START"><i class="glyphicon glyphicon-play"></i> Play</button>';
     echo' <button type="submit" class="btn btn-default" name="ANIMATE" value="ANIMATE_STOP"><i class="glyphicon glyphicon-stop"></i> Stop</button>';
