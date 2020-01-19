@@ -14,17 +14,12 @@ if (isset($_SESSION['authentification']))
     if ($_SESSION['osAutorise'] != '')
     {
         $osAutorise = explode(";", $_SESSION['osAutorise']);
-        // echo count($osAutorise);
-        // echo $_SESSION['osAutorise'];
         for($i = 0; $i < count($osAutorise); $i++)
         {
-            if(INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i])
-            {
-                $moteursOK = "OK";
-            }
+            if (INI_Conf_Moteur($_SESSION['opensim_select'], "osAutorise") == $osAutorise[$i]) {$moteursOK = true;}
         }
     }
-    else {$moteursOK = "NOK";}
+    else {$moteursOK = false;}
 
     $btnN1 = "disabled"; $btnN2 = "disabled"; $btnN3 = "disabled";
     if ($_SESSION['privilege'] == 4) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}   // Niv 4	
@@ -33,14 +28,13 @@ if (isset($_SESSION['authentification']))
     // if ($_SESSION['privilege'] == 1) {$btnN1 = "";}                          // Niv 1
     if ($moteursOK == true) {if( $_SESSION['privilege'] == 1) {$btnN1 = ""; $btnN2 = ""; $btnN3 = "";}}
 
-    /* CONSTRUCTION de la commande pour ENVOI sur la console via  SSH */
     if (isset($_POST['cmd']))
     {
         $filename2 = INI_Conf_Moteur($_SESSION['opensim_select'], "address").$FichierINIOpensim;			 
         if (file_exists($filename2)) {$filename = $filename2;}
         else {;}
 
-        if (!$fp = fopen($filename,"r")) 
+        if (!$fp = fopen($filename, "r")) 
         {
             echo "Echec de l'ouverture du fichier ".$filename;
         }
@@ -48,7 +42,7 @@ if (isset($_SESSION['authentification']))
         $tabfich = file($filename); 
         $n = count($tabfich);
 
-        for( $i = 1; $i < $n; $i++)
+        for($i = 1; $i < $n; $i++)
         {
             if (strpos($tabfich[$i], ";") === false)
             {
@@ -77,16 +71,10 @@ if (isset($_SESSION['authentification']))
         // $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($Remote_access_password));
         $myRemoteAdmin = new RemoteAdmin(trim($hostnameSSH), trim($RemotePort), trim($access_password2));
 
-        //*********************************
-        // === Commande BACKUP ===
-        //*********************************
-        $today = mktime(0, 0, 0, date("m"), date("d"), date("y"));
-        
         if ($_POST['backup_sim'] == '1' && $_POST['format_backup'] == 'OAR')
         {
             $parameters = array(
                 'region_name' => $_POST['name_sim'], 
-                // 'filename' => 'BackupOAR_'.$_POST['name_sim'].'_'.date("dmY", $today).'.oar'
                 'filename' => 'BackupOAR_'.$_POST['name_sim'].'_'.date(d_m_Y_h).'.oar'
             );
             $myRemoteAdmin->SendCommand('admin_save_oar', $parameters);
@@ -142,7 +130,7 @@ if (isset($_SESSION['authentification']))
     $n = count($tabfich);
     $srvOS = 9000;
 
-    for( $i = 1; $i < $n; $i++)
+    for($i = 1; $i < $n; $i++)
     {
         if (strpos($tabfich[$i], ";") === false)
         {
@@ -179,7 +167,7 @@ if (isset($_SESSION['authentification']))
 
         echo '<tr>';
         echo '<td><h5>'.$key.'</h5></td>';
-        echo '<td><img  style="height: 38px;" class="img-thumbnail" alt="" src="'.$ImgMap.'"></td>';
+        echo '<td><a href="index.php?a=21"><img  style="height: 38px;" class="img-thumbnail" alt="" src="'.$ImgMap.'"></a></td>';
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['RegionUUID'].'</span></h5></td>';
         echo '<td><h5><span class="badge">'.$tableauIni[$key]['Location'].'</span></h5></td>';
         echo '<td><h5>'.$tableauIni[$key]['ExternalHostName'].'</h5></td>';
