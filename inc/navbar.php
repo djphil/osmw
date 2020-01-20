@@ -72,23 +72,14 @@
                 </a>
                 <ul class="dropdown-menu">
                     <?php if ($_SESSION['privilege'] >= 3): ?>
-                        <li><a href="?a=18"><i class="glyphicon glyphicon-cog"></i> Configuration du Manager</a></li>
-                        <li><a href="?a=17"><i class="glyphicon glyphicon-cog"></i> Gestion des Simulateurs</a></li>
-                        <li><a href="?a=6"><i class="glyphicon glyphicon-cog"></i> Gestion des Régions</a></li>
-                        <li><a href="?a=5"><i class="glyphicon glyphicon-cog"></i> Gestion des Fichiers</a></li>
-                        <li><a href="?a=15"><i class="glyphicon glyphicon-cog"></i> Gestion des Utilisateurs</li>
-                        <li><a href="?a=23"><i class="glyphicon glyphicon-cog"></i> Gestion des Robots</a></li>
-
-                        <!-- TODO
-                        <li><a href="?a=8"><i class="glyphicon glyphicon-cog"></i> Gestion du Serveur</a></li>
-                        <li><a href="?a=12">Connectivite du Serveur OSMW</a></li>
-                        <li><a ref="?a=16">Sauvegardes config Opensim ( * en cours de dev )</a></li>
-                        <li><a href="?a=20">Transfert des Sauvegardes</a></li>
-                        <li><a href="?a=19">Gestion XMLRPC</a></li>
-                        -->
-                        <li class="divider"></li>
+                    <li><a href="?a=18"><i class="glyphicon glyphicon-cog"></i> Configuration du Manager</a></li>
+                    <li><a href="?a=17"><i class="glyphicon glyphicon-cog"></i> Gestion des Simulateurs</a></li>
+                    <li><a href="?a=6"><i class="glyphicon glyphicon-cog"></i> Gestion des Régions</a></li>
+                    <li><a href="?a=5"><i class="glyphicon glyphicon-cog"></i> Gestion des Fichiers</a></li>
+                    <li><a href="?a=15"><i class="glyphicon glyphicon-cog"></i> Gestion des Utilisateurs</a></li>
+                    <li><a href="?a=23"><i class="glyphicon glyphicon-cog"></i> Gestion des Robots</a></li>
+                    <li class="divider"></li>
                     <?php endif; ?>
-
                     <li><a href="index.php?a=logout"><i class="glyphicon glyphicon-log-out"></i> <?php echo $txt_menu_logout ; ?></a></li>
                 </ul>
             </li>
