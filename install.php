@@ -20,37 +20,37 @@
         <input type="hidden" name="etape" value="1" />
 
         <div class="form-group">
-        <label for="hote" class="col-sm-4 control-label">db host</label>
+        <label for="dbhost" class="col-sm-4 control-label">db host</label>
             <div class="col-sm-4">
-                <input class="form-control" type="text" name="hote" maxlength="40" placeholder="localhost" />
+                <input class="form-control" type="text" name="dbhost" maxlength="40" placeholder="localhost" required />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="login" class="col-sm-4 control-label">db user</label>
+        <label for="dbuser" class="col-sm-4 control-label">db user</label>
             <div class="col-sm-4">
-                <input class="form-control" type="text" name="login" maxlength="40" placeholder="root" />
+                <input class="form-control" type="text" name="dbuser" maxlength="40" placeholder="root" required />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="mdp" class="col-sm-4 control-label">db pass</label>
+        <label for="dbpass" class="col-sm-4 control-label">db pass</label>
             <div class="col-sm-4">
-                <input class="form-control" type="password" name="mdp" maxlength="40" placeholder="password" />
+                <input class="form-control" type="password" name="dbpass" maxlength="40" placeholder="password" required />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="base" class="col-sm-4 control-label">db name</label>
+        <label for="dbname" class="col-sm-4 control-label">db name</label>
             <div class="col-sm-4">
-                <input class="form-control" type="text" name="base" maxlength="40" placeholder="osmw" />
+                <input class="form-control" type="text" name="dbname" maxlength="40" placeholder="osmw" required />
             </div>
         </div>
 
         <div class="form-group">
-        <label for="base" class="col-sm-4 control-label">dns name</label>
+        <label for="sshdns" class="col-sm-4 control-label">dns name</label>
             <div class="col-sm-4">
-                <input class="form-control" type="text" name="dns" maxlength="40" placeholder="domaine.com" />
+                <input class="form-control" type="text" name="sshdns" maxlength="40" placeholder="domaine.com" required />
             </div>
         </div>
 
@@ -84,16 +84,16 @@
             goto end;
         }
 
-        $hote = trim($_POST['hote']);
-        $login = trim($_POST['login']);
-        $pass = trim($_POST['mdp']);
-        $base = trim($_POST['base']);
-        $dns = trim($_POST['dns']);
+        $dbhost = trim($_POST['dbhost']);
+        $dbuser = trim($_POST['dbuser']);
+        $dbpass = trim($_POST['dbpass']);
+        $dbname = trim($_POST['dbname']);
+        $sshdns = trim($_POST['sshdns']);
 
-        $con = mysqli_connect($hote, $login, $pass, $base);
+        $db = mysqli_connect($dbhost, $dbuser, $dbpass, $dbname);
         if (mysqli_connect_errno()) {echo "Failed to connect to MySQL: ".mysqli_connect_error();}
 
-        if (!$con)
+        if (!$db)
         {
             echo '<div class="alert alert-danger">Mauvais paramètres de connexion, installation interompue ...</div>';
             echo '<div class="col-sm-offset-4 col-sm-4">';
@@ -102,7 +102,7 @@
             goto end;
         }
 
-        if (!mysqli_select_db($con, $base))
+        if (!mysqli_select_db($db, $dbname))
         {
             echo '<div class="alert alert-danger">Mauvais nom de base de données, installation interompue ...</div>';
             echo '<div class="col-sm-offset-4 col-sm-4">';
@@ -111,13 +111,12 @@
             goto end;
         }
         
-        $texte = '
-<?php
-$hostnameBDD = "'.$hote.'";
-$userBDD = "'.$login.'";
-$passBDD = "'.$pass.'";
-$database = "'.$base.'";
-$hostnameSSH = "'.$dns.'";
+        $texte = '<?php
+$hostnameBDD = "'.$dbhost.'";
+$userBDD = "'.$dbuser.'";
+$passBDD = "'.$dbpass.'";
+$database = "'.$dbname.'";
+$hostnameSSH = "'.$sshdns.'";
 
 /* Noms des fichiers INI  */
 $FichierINIOpensim = "OpenSim.ini";
@@ -190,53 +189,32 @@ $lang      = "fr";
             goto end;
         }
 
-        echo '<div class="alert alert-success">Création du fichier de configuration effectuée avec succès ...</div>';
+        echo '<div class="alert alert-success">Création du fichier <b>config.php</b> effectuée avec succès ...</div>';
         fclose($ouvrir);
 
-        $requetes = '';
-        $sql = file('docs/sql/database.sql');
+        $request = '';
+        $sql = file('docs/sql/osmw.sql');
         
         foreach($sql as $lecture)
         {
             if (substr(trim($lecture), 0, 2) != '--')
             {
-                $requetes .= $lecture;
+                $request .= $lecture;
             }
         }
 
-        $reqs = split(';', $requetes);
+        $reqs = explode(';', $request);
         
         foreach($reqs as $req)
         {
-            if (!mysql_query($req) AND trim($req) != '')
+            if (!mysqli_query($db, $req) AND trim($req) != '')
             {
                 exit('ERROR: '.$req);
             }
         }
 
-        $requetes = '';
-        $sql = file('docs/sql/database_NPC.sql');
-
-        foreach($sql as $lecture)
-        {
-            if (substr(trim($lecture), 0, 2) != '--')
-            {
-                $requetes .= $lecture;
-            }
-        }
-
-        $reqs = split(';', $requetes);
-
-        foreach($reqs as $req)
-        {
-            if (!mysql_query($req) AND trim($req) != '')
-            {
-                exit('ERROR : '.$req);
-            }
-        }
-
         echo '<div class="alert alert-success">Installation effectuée avec succès ...</div>';
-        echo '<div class="alert alert-warning">Veuillez supprimer le fichier <strong>install.php</strong> du server ...</div>';
+        echo '<div class="alert alert-warning">Veuillez supprimer le fichier <b>install.php</b> du server ...</div>';
         echo '<form class="form-group" action="" method="post">';
         echo '<input type="hidden" name="delete" value="1" />';
         echo '<div class="form-group">';
