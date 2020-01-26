@@ -41,7 +41,7 @@ CREATE TABLE `moteurs` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 INSERT INTO `moteurs` (`osAutorise`, `id_os`, `name`, `version`, `address`, `DB_OS`, `hypergrid`) VALUES
-(1, 'Opensim_1', 'MyGridName', 'Opensim 0.9.1.1', 'C:/OpenSimulator/opensim/', 'OpensimDB', 'hg.domain.com:80');
+(1, 'Opensim_1', 'MyGridName', 'Opensim 0.9.2.x', 'C:/opensim/bin/', 'OpensimDB', 'hg.domain.com:80');
 
 CREATE TABLE `npc` (
   `id` int(10) NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE `users` (
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 INSERT INTO `users` (`id`, `firstname`, `lastname`, `password`, `privilege`, `osAutorise`) VALUES
-(1, 'Super', 'Admin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 4, '');
+(1, 'super', 'admin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 4, '');
 
 
 ALTER TABLE `config`
