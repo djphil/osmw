@@ -1,14 +1,13 @@
+<?php if (basename($_SERVER['PHP_SELF']) == basename(__FILE__)) {die('Access denied ...');} ?>
 <?php
-echo '<span class="label label-primary">'.$actual_language.'</span>';
-foreach ($languages as $langCode => $langName)
+echo '<span class="label label-primary">'.$actual_language.'</span> ';
+$page = isset($_GET['a']) ? $_GET['a'] : 1;
+foreach ($languages as $k => $v)
 {
-    if ($langCode != $language_code)
+    if ($k != $language_code)
     {
-        echo '
-            <a href="?page='.isset($_GET['page']).'&amp;lang=' . $langCode . '">
-                <img src="img/flags/flag-'. $langCode . '.png" alt="' . $langName . '" title="' . $langName . '" />
-            </a>
-        ';
+        echo '<a href="?a='.$page.'&amp;lang='.$k.'">';
+        echo '<img src="img/flags/flag-'.$k.'.png" alt="'.$v.'" title="'.$v.'" /></a> ';
     }
 }
 ?>
