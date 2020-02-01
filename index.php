@@ -143,7 +143,7 @@ if ($a == 'logout')
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
-            <?php foreach($themes AS $k => $v) {echo '<li><a href="?a='.$page.'&amp;style='.$v.'"><i class="glyphicon glyphicon-leaf"></i> '.$v.'</a></li>';} ?>
+            <?php foreach($themes AS $k => $v) {echo '<li><a href="?a='.$a.'&amp;style='.$v.'"><i class="glyphicon glyphicon-leaf"></i> '.$v.'</a></li>';} ?>
         </ul>
     </div>
     <?php endif; ?>
