@@ -35,7 +35,7 @@ CREATE TABLE `moteurs` (
   `id_os` varchar(50) NOT NULL,
   `name` varchar(50) NOT NULL,
   `version` varchar(50) NOT NULL,
-  `address` varchar(50) NOT NULL,
+  `address` varchar(255) NOT NULL,
   `DB_OS` varchar(50) NOT NULL,
   `hypergrid` varchar(255) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;

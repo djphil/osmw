@@ -68,7 +68,7 @@ if (isset($_SESSION['authentification']))
             if (!empty($_POST['first']) && !empty($_POST['last']) && !empty($_POST['pass']))
             {
                 $fullname = $_POST['first']." ".$_POST['last'];
-                $parameters = array('command' => 'save iar '.$fullname.' / '.$_POST['pass'].' BackupIAR_'.$_POST['first'].'_'.$_POST['last'].'_'.date(d_m_Y_h).'.iar');
+                $parameters = array('command' => 'save iar '.$fullname.' / '.$_POST['pass'].' BackupIAR_'.$_POST['first'].'_'.$_POST['last'].'_'.date("d_m_Y_h").'.iar');
                 $myRemoteAdmin->SendCommand('admin_console_command', $parameters);
 
                 echo "<div class='alert alert-success alert-anim'>";

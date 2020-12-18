@@ -76,7 +76,7 @@ if (isset($_SESSION['authentification']))
             // echo "name_sim = ".$_POST['name_sim'];
             $parameters = array('command' => 'change region '.$_POST['name_sim']);
             $myRemoteAdmin->SendCommand('admin_console_command', $parameters);  
-            $parameters = array('command' => 'terrain save BackupMAP_'.$_POST['name_sim'].'_'.date(d_m_Y_h).'.bmp');
+            $parameters = array('command' => 'terrain save BackupMAP_'.$_POST['name_sim'].'_'.date("d_m_Y_h").'.bmp');
             $myRemoteAdmin->SendCommand('admin_console_command', $parameters);  
             $parameters = array('command' => 'change region root');
             $myRemoteAdmin->SendCommand('admin_console_command', $parameters);  

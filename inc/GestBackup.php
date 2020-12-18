@@ -75,7 +75,7 @@ if (isset($_SESSION['authentification']))
         {
             $parameters = array(
                 'region_name' => $_POST['name_sim'], 
-                'filename' => 'BackupOAR_'.$_POST['name_sim'].'_'.date(d_m_Y_h).'.oar'
+                'filename' => 'BackupOAR_'.$_POST['name_sim'].'_'.date("d_m_Y_h").'.oar'
             );
             $myRemoteAdmin->SendCommand('admin_save_oar', $parameters);
         }
